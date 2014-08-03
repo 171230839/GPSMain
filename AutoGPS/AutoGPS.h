@@ -16,19 +16,23 @@
 namespace EsriRuntimeQt
 {
 class MapGraphicsView;
+
 }
 
 #include "Map.h"
 
 //Uncommented layer(s) needed
-#include "ArcGISLocalTiledLayer.h"
-#include "ArcGISTiledMapServiceLayer.h"
+#include <ArcGISLocalTiledLayer.h>
+//#include <ArcGISTiledMapServiceLayer.h>
 //#include "LocalMapService.h"
 //#include "ArcGISDynamicMapServiceLayer.h"
 //#include "LocalFeatureService.h"
 //#include "ArcGISFeatureLayer.h"
 //#include "FeatureLayer.h"
-//#include "GraphicsLayer.h"
+#include "GraphicsLayer.h"
+#include <Geodatabase.h>
+#include <FeatureLayer.h>
+#include <FeatureTable.h>
 
 #include <QMainWindow>
 
@@ -37,6 +41,7 @@ class QAction;
 class QMenu;
 class QTreeView;
 class QDirModel;
+class QPushButton;
 QT_END_NAMESPACE
 
 
@@ -61,6 +66,8 @@ private slots:
     bool save();
     bool saveAs();
     void about();
+    void test();
+
 
 private:
     EsriRuntimeQt::Map m_map;
@@ -68,17 +75,18 @@ private:
     EsriRuntimeQt::ArcGISLocalTiledLayer m_tiledLayer;
     //     EsriRuntimeQt::ArcGISTiled MapServiceLayer m_tiledServiceLayer;
     //  EsriRuntimeQt::ArcGISDynamicMapServiceLayer m_dynamicServiceLayer;
-    //  EsriRuntimeQt::LocalMapService m_localMapService;
+//      EsriRuntimeQt::LocalMapService m_localMapService;
     //  EsriRuntimeQt::ArcGISDynamicMapServiceLayer m_dynamicLocalServiceLayer;
     //  EsriRuntimeQt::LocalFeatureService m_localFeatureService;
     //  EsriRuntimeQt::ArcGISFeatureLayer m_localFeatureLayer;
-    //  EsriRuntimeQt::GraphicsLayer m_graphicsLayer;
+      EsriRuntimeQt::GraphicsLayer m_graphicsLayer;
     //  EsriRuntimeQt::FeatureLayer m_featureLayer;
-
+    EsriRuntimeQt::Geodatabase gdb;
+    EsriRuntimeQt::FeatureLayer m_featureLayer;
+    EsriRuntimeQt::FeatureTable m_geodatabaseFeaturetable;
     void createActions();
     void createMenus();
     void createToolBars();
-    void createStatusBar();
     void readSettings();
     void writeSettings();
     bool maybeSave();
@@ -88,7 +96,7 @@ private:
     QString strippedName(const QString &fullDirName);
     void loadDir(const QString dirName);
     QMenu *fileMenu;
-
+//    QMenu *testMenu;
     QMenu *helpMenu;
     QToolBar *fileToolBar;
 
@@ -97,16 +105,18 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *exitAct;
-    QAction *cutAct;
-    QAction *copyAct;
-    QAction *pasteAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
+//    QAction *testAct;
+
     QDockWidget *dockWidget;
     QTreeView *treeView;
     QDirModel *model;
 
+    QPushButton *locationButton ;
     QString curDir;
+
+
 protected:
     void closeEvent(QCloseEvent *event);
 };
