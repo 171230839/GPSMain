@@ -19,6 +19,9 @@
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
+    application.setOrganizationName("AutoGPSProject");
+    application.setApplicationName("AutoGPS");
+
 
     // Before initializing ArcGIS Runtime, first set the
     // ArcGIS Runtime license by providing the license string
@@ -43,8 +46,9 @@ int main(int argc, char *argv[])
     // }
 
     AutoGPS applicationWindow;
-    applicationWindow.setMinimumWidth(800);
+    applicationWindow.setMinimumWidth(1000);
     applicationWindow.setMinimumHeight(600);
+
     applicationWindow.show();
 
     return application.exec();
