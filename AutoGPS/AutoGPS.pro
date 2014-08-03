@@ -38,3 +38,8 @@ SOURCES += \
 HEADERS += \
 	AutoGPS.h
 
+FORMS +=
+
+RESOURCES += \
+    Ico.qrc
+
