@@ -33,8 +33,16 @@ class MapGraphicsView;
 #include <Geodatabase.h>
 #include <FeatureLayer.h>
 #include <FeatureTable.h>
-
 #include <QMainWindow>
+
+//////////////////////////////////
+#include <QMainWindow>
+#include <QGraphicsWidget>
+#include <QtDeclarative/QDeclarativeEngine>
+#include "Map.h"
+#include "SymbolDictionary.h"
+//#include "MapController.h"
+//#include "SearchController.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -45,7 +53,7 @@ class QPushButton;
 QT_END_NAMESPACE
 
 
-
+using namespace EsriRuntimeQt;
 
 class AutoGPS : public QMainWindow
 {
