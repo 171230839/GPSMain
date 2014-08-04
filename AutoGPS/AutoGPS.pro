@@ -14,7 +14,7 @@
 TARGET = AutoGPS 
 TEMPLATE = app
 
-QT += core gui opengl xml network
+QT += core gui opengl xml network declarative
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
