@@ -51,7 +51,7 @@ protected :
 private:
     QImage image;
     double rotation;
-    int screenX, screenY;
+    double screenX, screenY;
     bool visible;
     MapGraphicsView* m_pMapGraphicsView;
 };

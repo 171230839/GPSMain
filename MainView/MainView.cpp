@@ -149,7 +149,7 @@ void MainView::setUI()
     }
     setCentralWidget(mapGraphicsView);
 
-    //QObject::connect(&map, SIGNAL(mapReady()), this, SLOT(onMapReady()));
+    QObject::connect(&map, SIGNAL(mapReady()), this, SLOT(onMapReady()));
 
     //  dictionary = SymbolDictionary(SymbolDictionaryType::Mil2525C);
     //  searchController = new SearchController(&dictionary);
@@ -314,16 +314,16 @@ void MainView::setUI()
 //  QMainWindow::resizeEvent(event);
 //}
 
-//void MainView::onMapReady()
-//{
-//    // IMPORTANT: some geometry / spatial reference operations can not take place
-//    // until the map is valid and has a valid spatial reference
-//    // so you will need to wait for this event to start processing
+void MainView::onMapReady()
+{
+   // IMPORTANT: some geometry / spatial reference operations can not take place
+   // until the map is valid and has a valid spatial reference
+   // so you will need to wait for this event to start processing
 
-//    qDebug() << "Map is now ready";
+   qDebug() << "Map is now ready";
 
-//    if (mapController)
-//    {
-//        mapController->mapReady();
-//    }
-//}
+   if (mapController)
+   {
+       mapController->mapReady();
+   }
+}

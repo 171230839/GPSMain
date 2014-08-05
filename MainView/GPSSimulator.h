@@ -22,8 +22,20 @@ public:
 	~GPSSimulator();
 
 	void startSimulation();
-//	void pauseSimulation();
-//	void resumeSimulation();
+	void pauseSimulation();
+	void resumeSimulation();
+
+	bool isActive();
+	bool started();
+
+	QString gpxFile();
+	bool setGpxFile(QString fileName);
+
+    int timerInterval();
+    void setTimerInterval(int );
+
+    int playbackMultiplier();
+    void setPlaybackMultiplier(int multiplier);
 
 private:
 	QFile m_GpxFile;
@@ -31,15 +43,26 @@ private:
 	QXmlStreamReader* gpxReader;
 	QTimer* timer;
 	int m_TimerInterval;
-	int m_PlaybackMultipier;
+    int m_PlaybackMultiplier;
 	QLineF currentSegment;
 	QLineF nextSegment;
 	QPointF latestPoint;
-
+	double startOrientationDelta;
+	double endOrientationDelta;
+	QTime currentTime;
+	QTime segmentStartTime;
+    QTime segmentEndTime;
+	QTime nextSegmentEndTime;
 	bool isStarted;
 
-	private slots:
-	void handleTimerEvent();
+	bool gotoNextPositionElement();
+	void getNextPoint(QPointF& point, QTime& time);
+	bool updateInterpolationParameters();
+    bool initializeInterpolationValues();
+
+	double getInterpolatedOrientation(const QPointF& currentPosition, double normalizedTime);
+    private slots:
+    void handleTimerEvent();
 
 	signals:
 	void positionUpdateAvailable(QPointF pos, double origentation);

@@ -66,7 +66,7 @@ private:
 private slots:
 //  void showIdentifyPanel(QList<IdentifyResult>);
 //  void updateNorthArrow();
-// void onMapReady();
+void onMapReady();
 };
 
 #endif // MAINVIEW_H
