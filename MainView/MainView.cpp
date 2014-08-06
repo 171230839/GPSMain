@@ -47,12 +47,12 @@
 #include "MainView.h"
 #include "DictionaryImageProvider.h"
 
-//static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/MainOverlay.qml");
-static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/myqml.qml");
+static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/MainOverlay.qml");
+//static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/myqml.qml");
 MainView::MainView(QWidget* parent) :
     overlayWidget(new QGraphicsWidget()),
     mapGraphicsView(0),
-  //  mapController(0),
+    mapController(0),
    // searchController(0),
     overlayUI(0),
     QMainWindow(parent)
@@ -113,9 +113,9 @@ void MainView::setUI()
 
     // TODO: put your own high res dataset path here if desired
     QString dataPathTpk = getPathSampleData() + "tpks" + QDir::separator();
-//    QString loadTpk = dataPathTpk + "Imagery";
+    QString loadTpk = dataPathTpk + "Imagery";
 
-      QString  loadTpk = "D:/Qt/Qt5.3.1/workspace/build-AutoGPS-Desktop_Qt_5_3_MSVC2012_OpenGL_32bit-Debug/debug\\ok.tpk";
+//      QString  loadTpk = "D:/Qt/Qt5.3.1/workspace/build-AutoGPS-Desktop_Qt_5_3_MSVC2012_OpenGL_32bit-Debug/debug\\ok.tpk";
     //////////////////////////////////////////////////////////////////
     // For a disconnected, simple low res test, this will use sdk/samples/data/tpk/Topographic.tpk
     // but you won't be able to see detailed symbology
@@ -201,7 +201,7 @@ void MainView::setUI()
 //    connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
 //    timer->start(1000 / 24);
 
-    mapController->initController();
+//    mapController->initController();
 
 //    // Hook up the main menu component UI
 //    mainMenuUI = overlayUI->findChild<QObject*>("mainMenu");

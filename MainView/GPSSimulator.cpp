@@ -6,7 +6,7 @@ GPSSimulator::GPSSimulator():
 {
     timer = new QTimer(this);
 	gpxReader = new QXmlStreamReader();
-	connect(timer, SIGNAL(timeout()), this, SLOT(handlerTimerEvent()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(handleTimerEvent()));
 }
 
 GPSSimulator::GPSSimulator(QString fileName, int updateInterval):
@@ -16,7 +16,7 @@ GPSSimulator::GPSSimulator(QString fileName, int updateInterval):
 {
 	timer = new QTimer(this);
 	gpxReader = new QXmlStreamReader();
-	connect(timer, SIGNAL(timeout()), this, SLOT(handlerTimerEvent()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(handleTimerEvent()));
     if (!setGpxFile(fileName))
 	{
 		m_GpxFile.setFileName("");

@@ -67,20 +67,20 @@ private:
   };
 
   // Methods
-  static bool isDuplicateTimes(QTime time1, QTime time2);
+//  static bool isDuplicateTimes(QTime time1, QTime time2);
 
-  QByteArray createChemLightReport(Point& location, const QString& messageID, const QString& action);
-  QByteArray createGenericReport(const QString& reportName, const QString& messageID, const QString& action);
+  //QByteArray createChemLightReport(Point& location, const QString& messageID, const QString& action);
+ // QByteArray createGenericReport(const QString& reportName, const QString& messageID, const QString& action);
   QByteArray createPositionReport(const QString& action);
-  QByteArray createSpotReport(QVariant data);
+//  QByteArray createSpotReport(QVariant data);
   QString decimalDegreesToDMS(double coord);
   bool filterMessages(const QString& strMessages);
 
   void readAppConfig();
-  void transmitMessages(QByteArray datagram);  
+  void transmitMessages(QByteArray datagram);
   void setMessageStream(const QString& stream);
   void setMessageStream(QXmlStreamReader& reader);
-  void setMessageStream(QFile& file);
+//  void setMessageStream(QFile& file);
   bool readMessages(QXmlStreamReader& reader);
   bool readMessage(QXmlStreamReader& reader);
   void skipUnknownElement(QXmlStreamReader& reader);
@@ -91,19 +91,19 @@ private:
   void handleMapMousePressRight(QPointF mousePoint);
 
   void showHideMe(bool show, Point atPoint, double withHeading);
-  Point MGRSToMapPoint(QString mgrs);
-  QString mapPointToMGRS(Point point);
+   Point MGRSToMapPoint(QString mgrs);
+   QString mapPointToMGRS(Point point);
 
-  void returnPoint(Point geometry);
-  void sendChemLightMessage(Point pos);
+//  void returnPoint(Point geometry);
+//  void sendChemLightMessage(Point pos);
 
-  QVariantMap symbolNameOrId2VariantMap(QString nameOrId);
+//  QVariantMap symbolNameOrId2VariantMap(QString nameOrId);
 
   // Attributes
   Map* map;
   MapGraphicsView* mapGraphicsView;
   SymbolDictionary dictionary;
-  MessageGroupLayer messagGroupLayer;
+  MessageGroupLayer messageGroupLayer;
   MessageProcessor messageProcessor;
 
   bool buddiesLayerVisible;
@@ -166,41 +166,41 @@ signals:
   void identifyComplete(QList<IdentifyResult> results);
 
 public slots:
-  void handleBasemapChange(QString name);
-  void handleCenterOnSelfBtn();
-  void handleChemLightSelected(QString color);
-  void handleGetPointFromMap();
-  void handleHomeClicked();
-  void handleOpenCOA();
-  void handleOpenMPK();
-  void toggleLayerVisibility(QString layerName);
-  void handlePan(QString direction);
+//  void handleBasemapChange(QString name);
+ // void handleCenterOnSelfBtn();
+//  void handleChemLightSelected(QString color);
+//  void handleGetPointFromMap();
+//  void handleHomeClicked();
+//  void handleOpenCOA();
+//  void handleOpenMPK();
+//  void toggleLayerVisibility(QString layerName);
+//  void handlePan(QString direction);
   void handlePositionAvailable(QPointF pos, double orientation);
-  void handleResetMap();
+//  void handleResetMap();
   void handleToggleBroadcastPosition(bool state);
-  void handleToggleBuddies(bool state);
-  void handleToggleEmergencyClicked(bool state);
-  void handleToggleObservations(bool state);
-  void handleToggleReceivePositionReports(bool state);
-  void handleToggleReceiveSpotReports(bool state);
-  void openAppConfigDialog();
+//  void handleToggleBuddies(bool state);
+//  void handleToggleEmergencyClicked(bool state);
+//  void handleToggleObservations(bool state);
+//  void handleToggleReceivePositionReports(bool state);
+//  void handleToggleReceiveSpotReports(bool state);
+//  void openAppConfigDialog();
   void handleToggleShowMe(bool state);
   void handleToggleFollowMe(bool state);
-  void handleZoomIn();
-  void handleZoomOut();
+//  void handleZoomIn();
+//  void handleZoomOut();
   void processPendingDatagrams();
-  void sendSpotReport(QVariant data);
+//  void sendSpotReport(QVariant data);
   void applyAppConfigSettings();
   void mousePress(QMouseEvent mouseEvent);
-  void onIdentifyComplete(QList<IdentifyResult> results);
-  void handleVisibilityAnalysisClicked();
-  void onSubmitJobComplete(const EsriRuntimeQt::GPJobResource& jobResource);
-  void onGpError(const EsriRuntimeQt::ServiceError& error);
+//  void onIdentifyComplete(QList<IdentifyResult> results);
+//  void handleVisibilityAnalysisClicked();
+//  void onSubmitJobComplete(const EsriRuntimeQt::GPJobResource& jobResource);
+//  void onGpError(const EsriRuntimeQt::ServiceError& error);
 
   /*!
     \brief Slot to tell MainView that a UI element was clicked, preventing it from running "identify"
   */
-  void uiElementClicked();
+//  void uiElementClicked();
 
 private slots:
   void sendPositionMessage();
