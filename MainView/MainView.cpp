@@ -48,7 +48,7 @@
 #include "DictionaryImageProvider.h"
 
 static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/MainOverlay.qml");
-//static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/myqml.qml");
+//static const QString UI_OVERLAY_PATH("qrc:/Resources/qml/MyOverlay.qml");
 MainView::MainView(QWidget* parent) :
     overlayWidget(new QGraphicsWidget()),
     mapGraphicsView(0),
@@ -156,30 +156,33 @@ void MainView::setUI()
       mapController = new MapController(&map, mapGraphicsView, this);
 
     // invoke the QML UI
-//    engine = new QDeclarativeEngine();
+   engine = new QDeclarativeEngine();
 //    imageProvider = new DictionaryImageProvider(&dictionary);
 //    engine->addImageProvider(QLatin1String("dictionary"), imageProvider);
-//    QDeclarativeComponent component(engine, QUrl(UI_OVERLAY_PATH));
-//    overlayUI = component.create();
-//    if (!overlayUI)
-//    {
-//        qDebug() << "Failed to load UI overlay";
-//        qDebug() << component.errorString();
-//        QMessageBox box;
-//        box.setText("Error:\n" + component.errorString());
-//        box.exec();
-//        return;
-//    }
+   QDeclarativeComponent component(engine, QUrl(UI_OVERLAY_PATH));
+   overlayUI = component.create();
+   if (!overlayUI)
+   {
+       qDebug() << "Failed to load UI overlay";
+       qDebug() << component.errorString();
+       QMessageBox box;
+       box.setText("Error:\n" + component.errorString());
+       box.exec();
+       return;
+   }
 
     // Create a container for the UML UI and add it to the scene
-//    overlayWidget = new QGraphicsWidget();
-//    QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(overlayWidget);
-//    layout->setContentsMargins(0, 0, 0, 0);
-//    QGraphicsLayoutItem* qmlUILayout = qobject_cast<QGraphicsLayoutItem*>(overlayUI);
-//    layout->addItem(qmlUILayout);
-//    overlayWidget->setLayout(layout);
-//    mapGraphicsView->scene()->addItem(overlayWidget);
-
+   overlayWidget = new QGraphicsWidget();
+   QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(overlayWidget);
+   layout->setContentsMargins(0, 0, 0, 0);
+   QGraphicsLayoutItem* qmlUILayout = qobject_cast<QGraphicsLayoutItem*>(overlayUI);
+   layout->addItem(qmlUILayout);
+   overlayWidget->setLayout(layout);
+   mapGraphicsView->scene()->addItem(overlayWidget);
+    qDebug()<<"width"<<this->width()<< "height" << this->height();
+    qDebug()<<"overlayWidget.width" << mapGraphicsView->width() << mapGraphicsView->height();
+    qDebug()<<"qml width"<<qmlUILayout->preferredHeight();
+    return;
     // Hook up the main overlay UI
 //    connect(overlayUI, SIGNAL(basemapChanged(QString)), mapController, SLOT(handleBasemapChange(QString)));
 //    connect(overlayUI, SIGNAL(homeClicked()), mapController, SLOT(handleHomeClicked()));
@@ -201,7 +204,7 @@ void MainView::setUI()
 //    connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
 //    timer->start(1000 / 24);
 
-//    mapController->initController();
+//   mapController->initController();
 
 //    // Hook up the main menu component UI
 //    mainMenuUI = overlayUI->findChild<QObject*>("mainMenu");
@@ -258,7 +261,8 @@ void MainView::setUI()
 //    }
 
     //qDebug()<<"qmlUILayout.width"<< qmlUILayout->preferredSize().width() << " height" <<qmlUILayout->preferredSize().height();
-//    mapGraphicsView->scene()->setSceneRect(0, 0, qmlUILayout->preferredSize().width(), qmlUILayout->preferredSize().height());
+//   mapGraphicsView->scene()->setSceneRect(0, 0, qmlUILayout->preferredSize().width(), qmlUILayout->preferredSize().height());
+
 
 }
 
@@ -301,18 +305,19 @@ void MainView::setUI()
 //    QMainWindow::keyPressEvent(event);
 //}
 
-//void MainView::resizeEvent(QResizeEvent* event)
-//{
-//  if (map.isInitialized())
-//  {
-//    QRectF sceneRect = mapGraphicsView->sceneRect();
-//    overlayWidget->setGeometry(sceneRect);
+void MainView::resizeEvent(QResizeEvent* event)
+{
+  if (map.isInitialized())
+  {
 
-//    // TODO: add any resizing logic here needed to adjust a scalebar or compass
-//  }
+    QRectF sceneRect = mapGraphicsView->sceneRect();
+    overlayWidget->setGeometry(sceneRect);
 
-//  QMainWindow::resizeEvent(event);
-//}
+    // TODO: add any resizing logic here needed to adjust a scalebar or compass
+  }
+
+  QMainWindow::resizeEvent(event);
+}
 
 void MainView::onMapReady()
 {

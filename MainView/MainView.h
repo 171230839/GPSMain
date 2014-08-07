@@ -40,7 +40,7 @@ public:
 
 //protected:
 //  void keyPressEvent(QKeyEvent* event);
-//  void resizeEvent(QResizeEvent* event);
+  void resizeEvent(QResizeEvent* event);
 
 private:
   static const QString MIL2525C_DIRECTORY;

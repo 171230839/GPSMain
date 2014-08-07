@@ -74,11 +74,11 @@ MapController::MapController(Map* inputMap,
 
     udpSocket = new QUdpSocket(this);
     udpSocket->bind(broadcastPort, QUdpSocket::DontShareAddress | QUdpSocket::ReuseAddressHint);
-    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
+//    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
 
     positionReportTimer = new QTimer(this);
     positionReportTimer->setInterval(1000);
-    connect(positionReportTimer, SIGNAL(timeout()), this, SLOT(sendPositionMessage()));
+//    connect(positionReportTimer, SIGNAL(timeout()), this, SLOT(sendPositionMessage()));
     handleToggleBroadcastPosition(true);
     handleToggleShowMe(true);
     handleToggleFollowMe(true);

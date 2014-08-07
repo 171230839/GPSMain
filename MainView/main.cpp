@@ -13,8 +13,8 @@
 
 #include "MainView.h"
 #include <QApplication>
-#include <QMessageBox>
-#include "ArcGISRuntime.h"
+//#include <QMessageBox>
+//#include "ArcGISRuntime.h"
 
 int main(int argc, char *argv[])
 {
@@ -43,8 +43,6 @@ int main(int argc, char *argv[])
     // }
 
     MainView applicationWindow;
-    applicationWindow.setMinimumWidth(800);
-    applicationWindow.setMinimumHeight(600);
     applicationWindow.show();
 
     return application.exec();
