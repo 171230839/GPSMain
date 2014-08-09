@@ -14,7 +14,7 @@
 TARGET = MainView 
 TEMPLATE = app
 
-QT += core gui opengl xml network declarative
+QT += opengl xml network declarative qml quick
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
@@ -57,7 +57,9 @@ FORMS += \
 
 OTHER_FILES += \
     Resources/qml/MainOverlay.qml \
-    Resources/qml/Controls/ClassificationBar.qml
+    Resources/qml/Controls/ClassificationBar.qml \
+    Resources/qml/Controls/PushButton.qml \
+    Resources/qml/CompositeControls/StatusBar.qml
 
 
 

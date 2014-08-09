@@ -74,11 +74,11 @@ MapController::MapController(Map* inputMap,
 
     udpSocket = new QUdpSocket(this);
     udpSocket->bind(broadcastPort, QUdpSocket::DontShareAddress | QUdpSocket::ReuseAddressHint);
-//    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
+    //    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
 
     positionReportTimer = new QTimer(this);
     positionReportTimer->setInterval(1000);
-//    connect(positionReportTimer, SIGNAL(timeout()), this, SLOT(sendPositionMessage()));
+    //    connect(positionReportTimer, SIGNAL(timeout()), this, SLOT(sendPositionMessage()));
     handleToggleBroadcastPosition(true);
     handleToggleShowMe(true);
     handleToggleFollowMe(true);
@@ -188,10 +188,10 @@ void MapController::handlePositionAvailable(QPointF pos, double orientation)
     Point mapPoint = GeometryEngine::project(pos.x(), pos.y(), map->spatialReference());
 
     if (0) // if debug simulation data
-       {
-           qDebug() << "Simulator Data: " << QString::number(pos.x()) << ", " << QString::number(pos.y()) << ", Orientation: " << orientation;
-           qDebug() << "         Delta: " << QString::number(mapPoint.x()) << ", " << QString::number(mapPoint.y());
-       }
+    {
+        qDebug() << "Simulator Data: " << QString::number(pos.x()) << ", " << QString::number(pos.y()) << ", Orientation: " << orientation;
+        qDebug() << "         Delta: " << QString::number(mapPoint.x()) << ", " << QString::number(mapPoint.y());
+    }
     double angle = (double)((static_cast<int>(orientation + 90.0)) % 360);
 
     showHideMe(showOwnship, mapPoint, angle);
@@ -204,19 +204,25 @@ void MapController::handlePositionAvailable(QPointF pos, double orientation)
 
     if (!myPreviousLocation.isNull())
     {
+        // calculate speed here if desired
 
+
+        emit speedChanged(QVariant(""));
     }
     myPreviousLocation = pos;
 
 
-    // QString lon = decimalDegreesToDMS(pos.x());
-    // QString lat = decimalDegreesToDMS(pos.y());
-    // QString latlon = lat + "," + lon;
-    // Q_UNUSED(latlon)
+    QString lon = decimalDegreesToDMS(pos.x());
+    QString lat = decimalDegreesToDMS(pos.y());
+    QString latlon = lat + "," + lon;
+    //     Q_UNUSED(latlon)
 
-    QString mgrs = mapPointToMGRS(mapPoint);
+
+    //    QString mgrs = mapPointToMGRS(mapPoint);
+    //        qDebug() << "mgrs" << mgrs;
     emit headingChanged(QVariant(QString::number(angle) + (char)0x00B0));
-    emit positionChanged(QVariant(mgrs));
+    emit positionChanged(QVariant(latlon));
+
 
 }
 
@@ -230,7 +236,8 @@ void MapController::mapReady()
     SpatialReference sr = map->spatialReference();
     qDebug() << "MapReady, Spatial Reference = " << sr.id();
     const bool DEFAULT_GRID_ON = true;
-    if (DEFAULT_GRID_ON)
+    // if (DEFAULT_GRID_ON)
+    if (false)
     {
         map->grid().setType(GridType::Mgrs);
         map->grid().setVisible(true);
@@ -621,25 +628,25 @@ void MapController::initController()
         return;
     }
 
-    if (!messageProcessor.isEmpty())
-    {
-        return;
-    }
+    //    if (!messageProcessor.isEmpty())
+    //    {
+    //        return;
+    //    }
 
-    messageGroupLayer = MessageGroupLayer(SymbolDictionaryType::Mil2525C);
-    map->addLayer(messageGroupLayer);
-    messageProcessor = messageGroupLayer.messageProcessor();
-    dictionary = messageProcessor.symbolDictionary();
-    QList<SymbolProperties> symbolPropList = dictionary.findSymbols();
-    int symbolCount = symbolPropList.count();
-    bool dictionaryWorks = (symbolCount > 0);
-    if (!dictionaryWorks)
-        QMessageBox::warning(mapGraphicsView, "Failure", "Dictionary Did not initialize", "Advanced Symbology will not work");
+    //    messageGroupLayer = MessageGroupLayer(SymbolDictionaryType::Mil2525C);
+    //    map->addLayer(messageGroupLayer);
+    //    messageProcessor = messageGroupLayer.messageProcessor();
+    //    dictionary = messageProcessor.symbolDictionary();
+    //    QList<SymbolProperties> symbolPropList = dictionary.findSymbols();
+    //    int symbolCount = symbolPropList.count();
+    //    bool dictionaryWorks = (symbolCount > 0);
+    //    if (!dictionaryWorks)
+    //        QMessageBox::warning(mapGraphicsView, "Failure", "Dictionary Did not initialize", "Advanced Symbology will not work");
 
     map->setPanAnimationEnabled(false);
-    map->addLayer(mouseClickGraphicLayer);
+    //    map->addLayer(mouseClickGraphicLayer);
     map->addLayer(chemLightLayer);
-    map->addLayer(viewshedGraphicLayer);
+    //    map->addLayer(viewshedGraphicLayer);
 }
 
 QString MapController::getReaderValue(QXmlStreamReader& reader)
@@ -674,15 +681,16 @@ void MapController::handleMapMousePressLeft(QPointF mousePoint)
         previousMousePressPosMap.setX(mapPoint.x());
         previousMousePressPosMap.setY(mapPoint.y());
         qDebug()<<"Right Click, Map Point = " << mapPoint.x() << "," << mapPoint.y();
-        //        if (mouseState == MouseStateMenuClicked)
-        //            mouseState = MouseStateWaitingForMapPoint;
-        //        else if (mouseState == MouseStateWaitingForMapPoint)
-        //        {
-        //            if (chemLightColorStr == "None")
-        //                returnPoint(previousMousePressPosMap);
-        //            else
-        //                sendChemLightMessage(previousMousePressPosMap);
-        //        }
+        if (mouseState == MouseStateMenuClicked)
+            mouseState = MouseStateWaitingForMapPoint;
+        else if (mouseState == MouseStateWaitingForMapPoint)
+        {
+                qDebug()<<"mousestate waiting for map point" << chemLightColorStr;
+//            if (chemLightColorStr == "None")
+//                returnPoint(previousMousePressPosMap);
+//            else
+                sendChemLightMessage(previousMousePressPosMap);
+        }
     }
 }
 
@@ -707,4 +715,96 @@ void MapController::handleMapMousePressRight(QPointF mousePoint)
         //            qDebug() << "Layer Name: " << name << ", Type: " << int(layerType);
         //            }
     }
+}
+
+void MapController::handleHomeClicked()
+{
+    if (!ownshipStartingMapPoint.isEmpty())
+    {
+        handleToggleFollowMe(false);
+        map->setExtent(originalExtent);
+        map->setScale(originalScale);
+        map->setRotation(0);
+        map->panTo(ownshipStartingMapPoint);
+    }
+}
+
+void MapController::handleChemLightSelected(QString color)
+{
+    mouseState = MouseStateMenuClicked;
+    chemLightColorStr = color;
+}
+
+void MapController::sendChemLightMessage(Point pos)
+{
+    qDebug() << "sendChemLightMessage";
+    Qt::GlobalColor chemLightColor = Qt::green;
+
+    if (chemLightColorStr == "red")
+        chemLightColor = Qt::red;
+    else
+        if (chemLightColorStr == "blue")
+            chemLightColor = Qt::blue;
+    if (chemLightColorStr == "yellow")
+        chemLightColor = Qt::yellow;
+
+    SimpleMarkerSymbol smsSymbol(chemLightColor, 20, SimpleMarkerSymbolStyle::Circle);
+    Graphic mouseClickGraphic(pos, smsSymbol);
+
+    int id = this->chemLightLayer.addGraphic(mouseClickGraphic);
+    Q_UNUSED(id)
+
+ // QString messageID;
+ //    QByteArray report;
+
+    // create a new chem light
+    // messageID = QUuid::createUuid().toString();
+    // report = createChemLightReport(pos, messageID, "update");
+
+    // transmitMessages(report);
+    emit clearChemLightUI();
+    
+    chemLightColorStr = "None";
+    mouseState = MouseStateNone;
+
+}
+
+void MapController::handleZoomIn()
+{
+    map->zoom(0.5);
+}
+
+void MapController::handleZoomOut()
+{
+    map->zoom(2);
+}
+
+void MapController::handlePan(QString direction)
+{
+    if (followOwnship)
+    {
+        followOwnship = false;
+        map->setRotation(0);
+    }
+    Envelope extent = map->extent();
+
+    double width = extent.width();
+    double height = extent.height();
+
+    double centerX = extent.centerX();
+    double centerY = extent.centerY();
+
+    const double PAN_INCREMENT = 0.25;
+
+    if (direction.compare("up") == 0)
+        centerY += height * PAN_INCREMENT;
+    else if (direction.compare("down") == 0)
+        centerY -= height * PAN_INCREMENT;
+    else if (direction.compare("left") == 0)
+        centerX -= width * PAN_INCREMENT;
+    else if (direction.compare("right") == 0)
+        centerX += width * PAN_INCREMENT;
+
+    Envelope newExtent(Point(centerX, centerY), width, height);
+    map->panTo(newExtent);
 }

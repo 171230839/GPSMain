@@ -69,7 +69,7 @@ private:
   // Methods
 //  static bool isDuplicateTimes(QTime time1, QTime time2);
 
-  //QByteArray createChemLightReport(Point& location, const QString& messageID, const QString& action);
+  QByteArray createChemLightReport(Point& location, const QString& messageID, const QString& action);
  // QByteArray createGenericReport(const QString& reportName, const QString& messageID, const QString& action);
   QByteArray createPositionReport(const QString& action);
 //  QByteArray createSpotReport(QVariant data);
@@ -95,7 +95,7 @@ private:
    QString mapPointToMGRS(Point point);
 
 //  void returnPoint(Point geometry);
-//  void sendChemLightMessage(Point pos);
+  void sendChemLightMessage(Point pos);
 
 //  QVariantMap symbolNameOrId2VariantMap(QString nameOrId);
 
@@ -168,13 +168,13 @@ signals:
 public slots:
 //  void handleBasemapChange(QString name);
  // void handleCenterOnSelfBtn();
-//  void handleChemLightSelected(QString color);
+ void handleChemLightSelected(QString color);
 //  void handleGetPointFromMap();
-//  void handleHomeClicked();
+  void handleHomeClicked();
 //  void handleOpenCOA();
 //  void handleOpenMPK();
 //  void toggleLayerVisibility(QString layerName);
-//  void handlePan(QString direction);
+  void handlePan(QString direction);
   void handlePositionAvailable(QPointF pos, double orientation);
 //  void handleResetMap();
   void handleToggleBroadcastPosition(bool state);
@@ -186,8 +186,8 @@ public slots:
 //  void openAppConfigDialog();
   void handleToggleShowMe(bool state);
   void handleToggleFollowMe(bool state);
-//  void handleZoomIn();
-//  void handleZoomOut();
+  void handleZoomIn();
+  void handleZoomOut();
   void processPendingDatagrams();
 //  void sendSpotReport(QVariant data);
   void applyAppConfigSettings();

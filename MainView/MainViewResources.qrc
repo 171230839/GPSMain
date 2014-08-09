@@ -75,5 +75,11 @@
         <file>Resources/icons/X-Normal.png</file>
         <file>Resources/icons/X-Pressed.png</file>
         <file>Resources/qml/Controls/ClassificationBar.qml</file>
+        <file>Resources/qml/Controls/ToggleButton.qml</file>
+        <file>Resources/qml/Controls/Menu.qml</file>
+        <file>Resources/qml/Controls/PushButton.qml</file>
+        <file>Resources/qml/CompositeControls/StatusBar.qml</file>
+        <file>Resources/qml/CompositeControls/ChemLightBar.qml</file>
+        <file>Resources/qml/CompositeControls/NavigationControl2.qml</file>
     </qresource>
 </RCC>

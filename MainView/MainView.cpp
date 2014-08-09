@@ -182,20 +182,19 @@ void MainView::setUI()
     qDebug()<<"width"<<this->width()<< "height" << this->height();
     qDebug()<<"overlayWidget.width" << mapGraphicsView->width() << mapGraphicsView->height();
     qDebug()<<"qml width"<<qmlUILayout->preferredHeight();
-    return;
+    
     // Hook up the main overlay UI
 //    connect(overlayUI, SIGNAL(basemapChanged(QString)), mapController, SLOT(handleBasemapChange(QString)));
-//    connect(overlayUI, SIGNAL(homeClicked()), mapController, SLOT(handleHomeClicked()));
-//    connect(overlayUI, SIGNAL(chemLightSelected(QString)), mapController, SLOT(handleChemLightSelected(QString)));
-//    connect(overlayUI, SIGNAL(zoomInClicked()), mapController, SLOT(handleZoomIn()));
-//    connect(overlayUI, SIGNAL(zoomOutClicked()), mapController, SLOT(handleZoomOut()));
-//    connect(overlayUI, SIGNAL(panClicked(QString)), mapController, SLOT(handlePan(QString)));
+   connect(overlayUI, SIGNAL(homeClicked()), mapController, SLOT(handleHomeClicked()));
+    connect(overlayUI, SIGNAL(chemLightSelected(QString)), mapController, SLOT(handleChemLightSelected(QString)));
+    connect(overlayUI, SIGNAL(zoomInClicked()), mapController, SLOT(handleZoomIn()));
+    connect(overlayUI, SIGNAL(zoomOutClicked()), mapController, SLOT(handleZoomOut()));
+    connect(overlayUI, SIGNAL(panClicked(QString)), mapController, SLOT(handlePan(QString)));
 //    connect(overlayUI, SIGNAL(emergencyClicked(bool)), mapController, SLOT(handleToggleEmergencyClicked(bool)));
-//    connect(mapController, SIGNAL(clearChemLightUI()), overlayUI, SLOT(clearChemLightUI()));
-//    connect(mapController, SIGNAL(positionChanged(QVariant)), overlayUI, SLOT(updateLocation(QVariant)));
-//    connect(mapController, SIGNAL(speedChanged(QVariant)), overlayUI, SLOT(updateSpeed(QVariant)));
-//    connect(mapController, SIGNAL(speedChanged(QVariant)), overlayUI, SLOT(updateAltitude(QVariant)));
-//    connect(mapController, SIGNAL(headingChanged(QVariant)), overlayUI, SLOT(updateHeading(QVariant)));
+    connect(mapController, SIGNAL(clearChemLightUI()), overlayUI, SLOT(clearChemLightUI()));
+    connect(mapController, SIGNAL(positionChanged(QVariant)), overlayUI, SLOT(updateLocation(QVariant)));
+    connect(mapController, SIGNAL(speedChanged(QVariant)), overlayUI, SLOT(updateSpeed(QVariant)));
+  connect(mapController, SIGNAL(headingChanged(QVariant)), overlayUI, SLOT(updateHeading(QVariant)));
 //    connect(mapController, SIGNAL(newBasemapList(QVariant)), overlayUI, SLOT(updateBasemapList(QVariant)));
 //    connect(mapController, SIGNAL(identifyComplete(QList<IdentifyResult>)),
 //            this, SLOT(showIdentifyPanel(QList<IdentifyResult>)));
@@ -204,7 +203,7 @@ void MainView::setUI()
 //    connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
 //    timer->start(1000 / 24);
 
-//   mapController->initController();
+   mapController->initController();
 
 //    // Hook up the main menu component UI
 //    mainMenuUI = overlayUI->findChild<QObject*>("mainMenu");
@@ -228,7 +227,7 @@ void MainView::setUI()
 //    }
 
 //    // hook up the handler for the mouse click
-//    connect(&map, SIGNAL(mousePress(QMouseEvent)), mapController, SLOT(mousePress(QMouseEvent)));
+    connect(&map, SIGNAL(mousePress(QMouseEvent)), mapController, SLOT(mousePress(QMouseEvent)));
 
 //    // Hook up the spot report component UI
 //    spotReportUI = overlayUI->findChild<QObject*>("spotReport");
@@ -332,3 +331,5 @@ void MainView::onMapReady()
        mapController->mapReady();
    }
 }
+
+
