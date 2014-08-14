@@ -13,42 +13,14 @@
 
 #include "AutoGPS.h"
 #include <QApplication>
-#include <QMessageBox>
-#include "ArcGISRuntime.h"
+
 
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
-    application.setOrganizationName("AutoGPSProject");
-    application.setApplicationName("AutoGPS");
 
-
-    // Before initializing ArcGIS Runtime, first set the
-    // ArcGIS Runtime license by providing the license string
-    // obtained from the License Viewer tool.
-
-    // EsriRuntimeQt::ArcGISRuntime::setClientId("Place client id here");
-    // EsriRuntimeQt::ArcGISRuntime::License::setLicense("Place license string in here");
-
-    // Set extensions license for local server extension
-    // QStringList extensions;
-    // EsriRuntimeQt::ArcGISRuntime::License::setExtensionLicenses(extensions);
-
-    // Use this code to check for licensing errors
-    //
-    // if (EsriRuntimeQt::ArcGISRuntime::initialize() == false)
-    // {
-    //     QMessageBox msgBox;
-    //     msgBox.setText(EsriRuntimeQt::ArcGISRuntime::error());
-    //     msgBox.exec();
-    //     application.quit();
-    //     return 1;
-    // }
 
     AutoGPS applicationWindow;
-    applicationWindow.setMinimumWidth(1000);
-    applicationWindow.setMinimumHeight(600);
-
     applicationWindow.show();
 
     return application.exec();

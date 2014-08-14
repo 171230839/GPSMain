@@ -17,7 +17,7 @@ TEMPLATE = app
 QT += core gui opengl xml network declarative
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
+    QT += widgets serialport
 }
 
 # After installing the Runtime SDK for Qt you'll need to copy the
@@ -33,13 +33,40 @@ win32:CONFIG += \
 
 SOURCES += \
 	main.cpp \
-        AutoGPS.cpp 
+        AutoGPS.cpp \ 
+    mapcontroller.cpp \
+    simplegraphicoverlay.cpp \
+    masterthread.cpp
 
 HEADERS += \
-	AutoGPS.h
+	AutoGPS.h \
+    mapcontroller.h \
+    simplegraphicoverlay.h \
+    masterthread.h
 
 FORMS +=
 
 RESOURCES += \
-    Ico.qrc
+    AutoGPSResources.qrc
 
+OTHER_FILES += \
+    Resources/qml/CompositeControls/NavigationControl2.qml \
+    Resources/qml/CompositeControls/StatusBar.qml\
+    Resources/qml/Controls/ClassificationBar.qml\
+    Resources/qml/Controls/Menu.qml\
+    Resources/qml/Controls/ModelObject.qml\
+    Resources/qml/Controls/MultiDelegate.qml\
+    Resources/qml/Controls/Panel.qml\
+    Resources/qml/Controls/PushButton.qml\
+    Resources/qml/Controls/Stack.qml\
+    Resources/qml/Controls/StackObject.js\
+    Resources/qml/Controls/ToggleButton.qml\
+    Resources/qml/MainOverlay.qml\
+    Resources/qml/PanelContainers/MainMenu.qml\
+    Resources/qml/Panels/MainMenu/MainPanel.qml \
+    Resources/qml/PanelContainers/SerialConfig.qml \
+    Resources/qml/PanelContainers/Config.qml \
+    Resources/qml/Panels/Config/ConfigPanel.qml \
+    Resources/qml/Panels/Config/SerialConfigPanel.qml \
+    Resources/qml/Panels/Config/PortNoPanel.qml \
+    Resources/qml/Controls/ConDelegate.qml
