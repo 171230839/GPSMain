@@ -19,10 +19,11 @@ Panel
     {
        var component = Qt.createComponent("../../Controls/ModelObject.qml");
         var model = new Array();
+        var serialPortNo = serialPortThread.portList;
         for(var i=0; i < serialPortNo.length; ++i)
         {
             var str = serialPortNo[i];
-            console.log("str:" + str);
+            console.log("str:  " + str);
             var object = component.createObject(portNoPanel, {text: str});
             object.modelSignal.connect(updateSelectedContent);
             model[i] = object

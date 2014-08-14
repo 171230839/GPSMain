@@ -51,11 +51,7 @@
 MasterThread::MasterThread(QObject *parent)
     : QThread(parent), waitTimeout(0), quit(false), overlayUI(NULL)
 {
-
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
-        m_portList.append(info.portName());
-    foreach (QString str, m_portList)
-        qDebug()<<"m_portList: "<<str;
+//    connect(this->portList, SIGNAL(portListChanged()), this, SLOT(onPortListChanged()));
 }
 
 //! [0]
@@ -63,7 +59,7 @@ MasterThread::~MasterThread()
 {
     mutex.lock();
     quit = true;
-//    cond.wakeOne();
+    //    cond.wakeOne();
     mutex.unlock();
     wait();
 }
@@ -80,8 +76,8 @@ void MasterThread::transaction(const QString &portName, int waitTimeout, const Q
     //! [3]
     if (!isRunning())
         start();
-//    else
-//        cond.wakeOne();
+    //    else
+    //        cond.wakeOne();
 }
 //! [2] //! [3]
 
@@ -144,7 +140,7 @@ void MasterThread::run()
         }
         //! [9]  //! [13]
         mutex.lock();
-//        cond.wait(&mutex);
+        //        cond.wait(&mutex);
         if (currentPortName != portName) {
             currentPortName = portName;
             currentPortNameChanged = true;
@@ -159,14 +155,24 @@ void MasterThread::run()
 }
 
 
-void MasterThread::openPortNoPanel()
-{
 
+
+QStringList MasterThread::portList()
+{
+    m_portList.clear();
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+        m_portList.append(info.portName());
+    return m_portList;
 }
 
-void MasterThread::setOverlayUI(QObject* object)
+
+
+//void MasterThread::setContext(QDeclarativeContext *context)
+//{
+//    this->context = context;
+//}
+
+void MasterThread::onReadyOpenSerialPort(QVariant config)
 {
-    if (object == NULL)
-        return;
-    this->overlayUI = object;
+
 }

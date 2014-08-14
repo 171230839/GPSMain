@@ -46,11 +46,12 @@
 #include <QMutex>
 //#include <QWaitCondition>
 #include <QStringList>
+#include <QtDeclarative/QDeclarativeContext>
 //! [0]
 class MasterThread : public QThread
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList portList READ portList)
+    Q_PROPERTY(QStringList portList READ portList )
 public:
     MasterThread(QObject *parent = 0);
     ~MasterThread();
@@ -58,25 +59,29 @@ public:
     void transaction(const QString &portName, int waitTimeout, const QString &request);
     void run();
 
-    QStringList portList() const { return m_portList;}
+    //    void setContext(QDeclarativeContext *);
 
-    Q_INVOKABLE void openPortNoPanel();
+    QStringList portList();
 
-    void setOverlayUI(QObject*);
+
 signals:
     void response(const QString &s);
     void error(const QString &s);
     void timeout(const QString &s);
-
+    //    void portListChanged();
 private:
     QString portName;
     QString request;
     int waitTimeout;
     QMutex mutex;
-//    QWaitCondition cond;
+    //    QWaitCondition cond;
     bool quit;
     QStringList m_portList;
-     QObject* overlayUI;
+    QObject* overlayUI;
+    //     QDeclarativeContext *context;
+
+public slots:
+    void onReadyOpenSerialPort(QVariant);
 };
 //! [0]
 

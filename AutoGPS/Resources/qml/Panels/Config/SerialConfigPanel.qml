@@ -6,6 +6,12 @@ Panel
      signal openSerialPort()
 
     property Panel portNoPanel
+    property Panel baudRatePanel
+    property Panel dataBitsPanel
+    property Panel stopBitsPanel
+    property Panel parityPanel
+
+
 //    property list<QtObject> portNoPanelModel
     id: serialConfigPanel
     title: "SerialPort Config"
@@ -35,14 +41,11 @@ Panel
 
     model:
         [
-//        function openPortNoPanel()
-//        {
-//          portNoPanel.setModelData();
-//          stack.addPanel();
-//        }
-        ModelObject {  text: "SerialPort No: " + portNoPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(portNoPanel)} }
-//         ModelObject { text: "SerialPort Number"; onNoArgModelSignal: stack.addPanel(serialPortThread.openPortNoPanel()) }
-//     ModelObject { text: "SerialPort Number"; onNoArgModelSignal: openSerialPortPanel() }
+        ModelObject {  text: "SerialPort No: " + portNoPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(portNoPanel)} },
+        ModelObject {  text: "BaudRate:  " + baudRatePanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(baudRatePanel)} },
+        ModelObject { text: "DataBits: " + dataBitsPanel.selectedContent; onNoArgModelSignal: {stack.addPanel(dataBitsPanel)}},
+        ModelObject {  text: "StopBits:  " + stopBitsPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(stopBitsPanel)} },
+        ModelObject {  text: "Parity:  " + parityPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(parityPanel)} }
     ]
 
     PushButton

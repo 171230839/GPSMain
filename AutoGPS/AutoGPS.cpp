@@ -36,13 +36,14 @@ AutoGPS::AutoGPS (QWidget *parent):
 
     mapController = new MapController(&map, mapGraphicsView, this);
     engine = new QDeclarativeEngine(this);
-      QDeclarativeContext * context = new QDeclarativeContext(engine->rootContext());
+    context = new QDeclarativeContext(engine->rootContext());
       context->setContextProperty("serialPortThread", &thread);
-      qDebug()<<"portList()"<<QVariant::fromValue(thread.portList());
-      context->setContextProperty("serialPortNo", QVariant::fromValue(thread.portList()));
+//      connect(&thread, SIGNAL(portListChanged), this, SLOT(onPortListChanged));
+//      qDebug()<<"portList()"<<QVariant::fromValue(thread.portList());
+//      context->setContextProperty("serialPortNo", QVariant::fromValue(thread.portList()));
     QDeclarativeComponent component(engine, QUrl(UI_OVERLAY_PATH), engine);
     overlayUI = component.create(context);
-    thread.setOverlayUI(overlayUI);
+//    thread.setContext(context);
     if (!overlayUI)
     {
         qDebug() << "Failed to load UI overlay";
@@ -79,6 +80,12 @@ AutoGPS::AutoGPS (QWidget *parent):
     if (mainMenuUI)
     {
         connect(mainMenuUI, SIGNAL(exitClicked()), this, SLOT(close()));
+    }
+
+    QObject * serialConfig = overlayUI->findChild<QObject*>("serialConfig");
+    if (serialConfig)
+    {
+        connect(serialConfig, SIGNAL(readyOpenSerialPort(QVariant)), &thread, SLOT(onReadyOpenSerialPort(QVariant)));
     }
 }
 

@@ -69,4 +69,8 @@ OTHER_FILES += \
     Resources/qml/Panels/Config/ConfigPanel.qml \
     Resources/qml/Panels/Config/SerialConfigPanel.qml \
     Resources/qml/Panels/Config/PortNoPanel.qml \
-    Resources/qml/Controls/ConDelegate.qml
+    Resources/qml/Controls/ConDelegate.qml \
+    Resources/qml/Panels/Config/BaudRatePanel.qml \
+    Resources/qml/Panels/Config/DataBitsPanel.qml \
+    Resources/qml/Panels/Config/StopBitsPanel.qml \
+    Resources/qml/Panels/Config/ParityPanel.qml

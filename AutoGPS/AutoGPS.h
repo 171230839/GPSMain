@@ -21,7 +21,7 @@
 #include "masterthread.h"
 class QDeclarativeEngine;
 class QGraphicsWidget;
-
+class QDeclarativeContext;
 namespace EsriRuntimeQt
 {
 class MapGraphicsView;
@@ -39,6 +39,8 @@ public:
 
 private slots:
     void updateNorthArrow();
+//public slots:
+//    void onPortListChanged();
 private:
     EsriRuntimeQt::Map map;
     EsriRuntimeQt::MapGraphicsView* mapGraphicsView;
@@ -47,8 +49,8 @@ private:
     QGraphicsWidget* overlayWidget;
     QObject* overlayUI;
     QObject* mainMenuUI;
-
-       MasterThread thread;
+    QDeclarativeContext * context ;
+  MasterThread thread;
 protected:
       void resizeEvent(QResizeEvent* event);
 };
