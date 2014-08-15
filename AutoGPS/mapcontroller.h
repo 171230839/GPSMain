@@ -6,7 +6,7 @@
 #include <MapGraphicsView.h>
 #include "simplegraphicoverlay.h"
 
-
+#include <Geometry.h>
 
 using namespace EsriRuntimeQt;
 
@@ -39,20 +39,21 @@ private:
 //    QTimer* positionReportTimer;
 
 
-    QPointF myPreviousLocation;
-    QPoint previousMousePressPosScreen;
-    Point previousMousePressPosMap;
+//    QPointF myPreviousLocation;
+//    QPoint previousMousePressPosScreen;
+//    Point previousMousePressPosMap;
 
-    Point ownshipStartingMapPoint;
-    Point lastOwnshipPoint;
-    double lastHeading;
+//    Point ownshipStartingMapPoint;
+//    Point lastOwnshipPoint;
+//    double lastHeading;
+    Point currentMapPoint;
     bool showOwnship, followOwnship;
     bool isMapReady;
 
     SimpleGraphicOverlay* drawingOverlay;
 
-
-
+     double originalScale;
+    Envelope originalExtent;
 signals:
     void headingChanged(QVariant newHeading);
     void positionChanged(QVariant newPosition);
@@ -68,6 +69,10 @@ public slots:
     void handleToggleFollowMe(bool state);
     void handleZoomIn();
     void handleZoomOut();
+
+
+
+    void onAvaliblePosition(double, double, double);
 };
 
 #endif // MAPCONTROLLER_H

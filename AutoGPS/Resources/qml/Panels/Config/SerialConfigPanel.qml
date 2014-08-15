@@ -10,7 +10,7 @@ Panel
     property Panel dataBitsPanel
     property Panel stopBitsPanel
     property Panel parityPanel
-
+    property Panel timeOutPanel
 
 //    property list<QtObject> portNoPanelModel
     id: serialConfigPanel
@@ -45,7 +45,8 @@ Panel
         ModelObject {  text: "BaudRate:  " + baudRatePanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(baudRatePanel)} },
         ModelObject { text: "DataBits: " + dataBitsPanel.selectedContent; onNoArgModelSignal: {stack.addPanel(dataBitsPanel)}},
         ModelObject {  text: "StopBits:  " + stopBitsPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(stopBitsPanel)} },
-        ModelObject {  text: "Parity:  " + parityPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(parityPanel)} }
+        ModelObject {  text: "Parity:  " + parityPanel.selectedContent ; onNoArgModelSignal: {stack.addPanel(parityPanel)} },
+        ModelObject { text: "TimeOut: " + timeOutPanel.selectedContent; onNoArgModelSignal: { stack.addPanel(timeOutPanel)}}
     ]
 
     PushButton
@@ -58,6 +59,8 @@ Panel
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        onItemClicked: { serialConfigPanel.openSerialPort(); serialConfigPanel.goBack(); }
+        onItemClicked: {
+            console.log("serialCOnfig panel pushbutton clicked");
+            serialConfigPanel.openSerialPort(); serialConfigPanel.goBack(); }
     }
 }

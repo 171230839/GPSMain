@@ -19,6 +19,8 @@
 #include <QMainWindow>
 #include "mapcontroller.h"
 #include "masterthread.h"
+
+
 class QDeclarativeEngine;
 class QGraphicsWidget;
 class QDeclarativeContext;
@@ -34,13 +36,13 @@ class AutoGPS : public QMainWindow
 {
     Q_OBJECT
 public:
-   explicit  AutoGPS (QWidget *parent = 0);
+    explicit  AutoGPS (QWidget *parent = 0);
     ~AutoGPS ();
 
 private slots:
     void updateNorthArrow();
-//public slots:
-//    void onPortListChanged();
+    //public slots:
+    //    void onPortListChanged();
 private:
     EsriRuntimeQt::Map map;
     EsriRuntimeQt::MapGraphicsView* mapGraphicsView;
@@ -50,9 +52,13 @@ private:
     QObject* overlayUI;
     QObject* mainMenuUI;
     QDeclarativeContext * context ;
-  MasterThread thread;
+    MasterThread thread;
+
+
 protected:
-      void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent* event);
+    void closeEvent(QCloseEvent *event);
+
 };
 
 #endif // AUTOGPS_H

@@ -44,42 +44,71 @@
 
 #include <QThread>
 #include <QMutex>
-//#include <QWaitCondition>
 #include <QStringList>
-#include <QtDeclarative/QDeclarativeContext>
+#include <QVariant>
+
 //! [0]
 class MasterThread : public QThread
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList portList READ portList )
+    Q_PROPERTY(QStringList portList READ portList NOTIFY portListChanged)
+    Q_PROPERTY(QString qPortName READ qPortName)
+    Q_PROPERTY(QString qBaudRate READ qBaudRate)
+    Q_PROPERTY(QString qDataBits READ qDataBits)
+    Q_PROPERTY(QString qStopBits READ qStopBits)
+    Q_PROPERTY(QString qParity READ qParity)
+    Q_PROPERTY(QString qTimeout READ qTimeout)
 public:
     MasterThread(QObject *parent = 0);
     ~MasterThread();
-
-    void transaction(const QString &portName, int waitTimeout, const QString &request);
     void run();
 
-    //    void setContext(QDeclarativeContext *);
-
     QStringList portList();
-
-
+    QString qPortName() { return portName;}
+    QString qBaudRate() { return QString::number(baudRate);}
+    QString qDataBits() { return QString::number(dataBits);}
+    QString qStopBits() { return QString::number(stopBits);}
+    QString qParity() {
+        if (parity == 0)
+            return "NONE";
+        else if (parity == 2)
+            return "ODD";
+        else if (parity == 3)
+            return "ENEV";
+        return "";
+    }
+    QString qTimeout() { return QString::number(waitTimeout);}
+    void storeSerialConfig();
+    void init();
 signals:
     void response(const QString &s);
     void error(const QString &s);
     void timeout(const QString &s);
-    //    void portListChanged();
+    void portListChanged();
+    void positionChanged(QVariant);
+    void timeChanged(QVariant);
+    void speedChanged(QVariant);
+    void headingChanged(QVariant);
+//    void stateChanged(QVariant);
+    void avaliblePosition(double, double, double);
 private:
     QString portName;
-    QString request;
+    //    QString request;
+    int baudRate;
+    int stopBits;
+    int dataBits;
+    int parity;
     int waitTimeout;
     QMutex mutex;
     //    QWaitCondition cond;
     bool quit;
     QStringList m_portList;
-    QObject* overlayUI;
-    //     QDeclarativeContext *context;
 
+    void Decoding(QString);
+//    QString decimalDegreesToDMS(double coord);
+    QString DMTODMS(QString );
+//    QString getDM(QString);
+    double DMTodecimalDegrees(QString);
 public slots:
     void onReadyOpenSerialPort(QVariant);
 };

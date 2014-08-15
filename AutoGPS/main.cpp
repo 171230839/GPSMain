@@ -17,12 +17,15 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication application(argc, argv);
+    QApplication app(argc, argv);
 
+    app.setOrganizationName("AutoGPS");
+    app.setApplicationName("AutoGPS");
 
     AutoGPS applicationWindow;
+
     applicationWindow.show();
 
-    return application.exec();
+    return app.exec();
 }
 

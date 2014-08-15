@@ -5,6 +5,7 @@ Rectangle
   property string currentLocation: "Location: "
   property string currentHeading : " Heading: "
   property string currentSpeed   : "   Speed: "
+  property string currentTime : " Time: "
 
   id: myLocationBar
   width: 200
@@ -74,6 +75,22 @@ Rectangle
       anchors.margins: 4
       horizontalAlignment: Text.AlignHCenter
       verticalAlignment: Text.AlignBottom
+      color: "black"
+      font.family: "Courier New"
+      font.pixelSize: 12
+    }
+
+    Text
+    {
+//      visible: false
+      id: myTime
+      text: myLocationBar.currentTime
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.bottom: parent.bottom
+      anchors.horizontalCenterOffset: parent.width / 4
+      anchors.margins: 4
+      horizontalAlignment: Text.AlignHCenter
+      verticalAlignment: Text.AlignTop
       color: "black"
       font.family: "Courier New"
       font.pixelSize: 12

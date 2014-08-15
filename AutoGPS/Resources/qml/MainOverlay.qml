@@ -31,12 +31,12 @@ LayoutItem
         //statusBar.currentSpeed = "   Speed: " + (Math.round(10.0 * newSpeed) / 10.0);
         //However, the app provides speeds that are unrealistically fast and highly variable.
         //Therefore, fake it as follows:
-        var rand = Math.random();
-        if (rand < 0.005)
-            lastFakeSpeed--;
-        else if (rand > 0.995)
-            lastFakeSpeed++;
-        statusBar.currentSpeed = "   Speed: " + lastFakeSpeed;
+//        var rand = Math.random();
+//        if (rand < 0.005)
+//            lastFakeSpeed--;
+//        else if (rand > 0.995)
+//            lastFakeSpeed++;
+        statusBar.currentSpeed = "      Speed: " + lastFakeSpeed;
     }
 
 
@@ -48,6 +48,11 @@ LayoutItem
     function updateMapRotation(newRotation)
     {
         northArrow.rotation = 360 - newRotation;
+    }
+
+    function updateTime(newTime)
+    {
+        statusBar.currentTime = "Time: " + newTime
     }
 
     //    function updateBasemapList(newList)
@@ -153,7 +158,7 @@ LayoutItem
     StatusBar
     {
         id: statusBar
-        width: 350
+        width: 400
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.margins: 3

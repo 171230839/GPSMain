@@ -5,7 +5,7 @@ Panel
 {
     signal contentUpdated()
 
-    property string selectedContent: ""
+    property string selectedContent: serialPortThread.qStopBits
     function updateSelectedContent(updatedText)
     {
         console.log("updateSelectedContent: " + updatedText );

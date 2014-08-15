@@ -1,6 +1,7 @@
 #include "AutoGPS.h"
 #include <QApplication>
 #include <ArcGISLocalTiledLayer.h>
+#include <ArcGISTiledMapServiceLayer.h>
 //#include <QtDeclarative/QDeclarativeItem>
 #include <QtDeclarative/QDeclarativeComponent>
 #include <QtDeclarative/QDeclarativeContext>
@@ -27,12 +28,21 @@ AutoGPS::AutoGPS (QWidget *parent):
     EsriRuntimeQt::ArcGISRuntime::setRenderEngine(EsriRuntimeQt::RenderEngine::OpenGL);
 
     mapGraphicsView = EsriRuntimeQt::MapGraphicsView::create(map, this);
+    if (!mapGraphicsView)
+    {
+      qCritical() << "Unable to create map.";
+      return;
+    }
     map.setWrapAroundEnabled(false);
     map.setEsriLogoVisible(false);
     this->setCentralWidget(mapGraphicsView);
     QString tpkPath = QApplication::applicationDirPath() + QDir::separator() + "AutoGPS.tpk";
     ArcGISLocalTiledLayer tiledLayer(tpkPath);
     map.addLayer(tiledLayer);
+//    ArcGISTiledMapServiceLayer tiledLayer("http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer");
+//    map.addLayer(tiledLayer);
+//    ArcGISLocalTiledLayer tiledLayer("D:/Qt/QtSampleApplication_10.2.3_win32/sdk/samples/data/tpks/Topographic.tpk");
+//    map.addLayer(tiledLayer);
 
     mapController = new MapController(&map, mapGraphicsView, this);
     engine = new QDeclarativeEngine(this);
@@ -72,10 +82,13 @@ AutoGPS::AutoGPS (QWidget *parent):
     connect(mapController, SIGNAL(positionChanged(QVariant)), overlayUI, SLOT(updateLocation(QVariant)));
     connect(mapController, SIGNAL(speedChanged(QVariant)), overlayUI, SLOT(updateSpeed(QVariant)));
     connect(mapController, SIGNAL(headingChanged(QVariant)), overlayUI, SLOT(updateHeading(QVariant)));
+    connect(&thread, SIGNAL(positionChanged(QVariant)), overlayUI, SLOT(updateLocation(QVariant)));
+    connect(&thread, SIGNAL(avaliblePosition(double, double, double)), mapController, SLOT(onAvaliblePosition(double, double, double)));
+    connect(&thread, SIGNAL(timeChanged(QVariant)), overlayUI, SLOT(updateTime(QVariant)));
+    connect(&thread, SIGNAL(speedChanged(QVariant)), overlayUI, SLOT(updateSpeed(QVariant)));
+    connect(&thread, SIGNAL(headingChanged(QVariant)), overlayUI, SLOT(updateHeading(QVariant)));
+//    connect(mapController, SIGNAL())
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
-    timer->start(1000 / 24);
     mainMenuUI = overlayUI->findChild<QObject*>("mainMenu");
     if (mainMenuUI)
     {
@@ -87,6 +100,14 @@ AutoGPS::AutoGPS (QWidget *parent):
     {
         connect(serialConfig, SIGNAL(readyOpenSerialPort(QVariant)), &thread, SLOT(onReadyOpenSerialPort(QVariant)));
     }
+
+//    thread.init();
+//    connect(&thread, SIGNAL(response(QString)), mapController, SLOT(onResponse(QString)));
+//    connect(&thread, SIGNAL(timeout(QString)), mapController, SLOT(onTimeout(QString)));
+//    connect(&thread, SIGNAL(error(QString)), mapController, SLOT(onError(QString)));
+    thread.start();
+
+     connect(&map, SIGNAL(mapReady()), mapController, SLOT(onMapReady()));
 }
 
 AutoGPS::~AutoGPS()
@@ -107,3 +128,11 @@ void AutoGPS::resizeEvent(QResizeEvent* event)
     }
     QMainWindow::resizeEvent(event);
 }
+
+void AutoGPS::closeEvent(QCloseEvent *event)
+{
+
+      thread.storeSerialConfig();
+      event->accept();
+}
+

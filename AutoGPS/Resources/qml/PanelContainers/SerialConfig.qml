@@ -9,10 +9,12 @@ Item{
     property Stack stack
     id: serialConfig
     panel: serialConfigPanel
-    objectName:
+    objectName: "serialConfig"
+
     function prepareOpenSerialPort()
     {
-         readyOpenSerialPort(config)
+        console.log("prepareOpenSerialPort()");
+         serialConfig.readyOpenSerialPort(config)
     }
 
     resources:
@@ -23,8 +25,9 @@ Item{
             property string portNo: portNoPanel.selectedContent
             property string baudRate: baudRatePanel.selectedContent
             property string dataBits: dataBitsPanel.selectedContent
-            property  string stopBits:  stopBits.selectedContent
-            property string parity: parity.selectedContent
+            property  string stopBits:  stopBitsPanel.selectedContent
+            property string parity: parityPanel.selectedContent
+            property string timeOut: timeOutPanel.selectedContent
         }
 
     ]
@@ -38,7 +41,8 @@ Item{
         dataBitsPanel: dataBitsPanel
         stopBitsPanel: stopBitsPanel
         parityPanel: parityPanel
-        Component.onCompleted: { openSerialPort.connect(serialConfig.prepareOpenSerialPort) }
+        timeOutPanel:  timeOutPanel
+        onOpenSerialPort: { serialConfig.prepareOpenSerialPort()}
     }
 
     PortNoPanel
@@ -73,10 +77,12 @@ Item{
     {
         id: parityPanel
         stack: serialConfig.stack
+        onContentUpdated: {stack.addPanel(timeOutPanel);}
     }
 
-//    TimeOutPanel
-//    {
-
-//    }
+    TimeOutPanel
+    {
+        id: timeOutPanel
+        stack: serialConfig.stack
+    }
 }
