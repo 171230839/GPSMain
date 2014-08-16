@@ -1,7 +1,7 @@
 #include "AutoGPS.h"
 #include <QApplication>
 #include <ArcGISLocalTiledLayer.h>
-#include <ArcGISTiledMapServiceLayer.h>
+//#include <ArcGISTiledMapServiceLayer.h>
 //#include <QtDeclarative/QDeclarativeItem>
 #include <QtDeclarative/QDeclarativeComponent>
 #include <QtDeclarative/QDeclarativeContext>
@@ -38,6 +38,7 @@ AutoGPS::AutoGPS (QWidget *parent):
     this->setCentralWidget(mapGraphicsView);
     QString tpkPath = QApplication::applicationDirPath() + QDir::separator() + "AutoGPS.tpk";
     ArcGISLocalTiledLayer tiledLayer(tpkPath);
+    tiledLayer.setName("tiledLayer");
     map.addLayer(tiledLayer);
 //    ArcGISTiledMapServiceLayer tiledLayer("http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer");
 //    map.addLayer(tiledLayer);
@@ -45,6 +46,8 @@ AutoGPS::AutoGPS (QWidget *parent):
 //    map.addLayer(tiledLayer);
 
     mapController = new MapController(&map, mapGraphicsView, this);
+    mapController->init();
+
     engine = new QDeclarativeEngine(this);
     context = new QDeclarativeContext(engine->rootContext());
       context->setContextProperty("serialPortThread", &thread);
@@ -101,6 +104,23 @@ AutoGPS::AutoGPS (QWidget *parent):
         connect(serialConfig, SIGNAL(readyOpenSerialPort(QVariant)), &thread, SLOT(onReadyOpenSerialPort(QVariant)));
     }
 
+    QObject *config = overlayUI->findChild<QObject*>("config");
+    if (config)
+    {
+        connect(config, SIGNAL(showMeToggled(bool)), mapController, SLOT(handleToggleShowMe(bool)));
+        connect(config, SIGNAL(followMeToggled(bool)), mapController, SLOT(handleToggleFollowMe(bool)));
+        connect(config, SIGNAL(resetMapClicked()), mapController, SLOT(handleResetMap()));
+    }
+    QObject *geometryPanel = overlayUI->findChild<QObject*>("geometryPanel");
+    if (geometryPanel)
+    {
+        connect(geometryPanel, SIGNAL(pointsToggled(bool)), mapController, SLOT(handlePointsToggled(bool)));
+        connect(geometryPanel, SIGNAL(toLinesClicked()), mapController, SLOT(handleToLinesClicked()));
+        connect(geometryPanel, SIGNAL(okClicked()), mapController, SLOT(handleOkClicked()));
+        connect(geometryPanel, SIGNAL(toPolygonClicked()), mapController, SLOT(handleToPolygonClicked()));
+        connect(geometryPanel, SIGNAL(clearClicked()), mapController, SLOT(onClearClicked()));
+    }
+
 //    thread.init();
 //    connect(&thread, SIGNAL(response(QString)), mapController, SLOT(onResponse(QString)));
 //    connect(&thread, SIGNAL(timeout(QString)), mapController, SLOT(onTimeout(QString)));
@@ -108,6 +128,14 @@ AutoGPS::AutoGPS (QWidget *parent):
     thread.start();
 
      connect(&map, SIGNAL(mapReady()), mapController, SLOT(onMapReady()));
+
+     QTimer* timer = new QTimer(this);
+     connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
+     timer->start(1000 / 24);
+
+     // hook up the handler for the mouse click
+     connect(&map, SIGNAL(mousePress(QMouseEvent)), mapController, SLOT(mousePress(QMouseEvent)));
+
 }
 
 AutoGPS::~AutoGPS()

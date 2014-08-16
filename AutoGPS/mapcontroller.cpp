@@ -1,5 +1,9 @@
 #include "mapcontroller.h"
 #include <GeometryEngine.h>
+#include <SimpleMarkerSymbol.h>
+#include <Polyline.h>
+#include <Polygon.h>
+#include <SimpleFillSymbol.h>
 
 MapController::MapController(Map* inputMap,
                              MapGraphicsView* inputGraphicsView,
@@ -10,7 +14,10 @@ MapController::MapController(Map* inputMap,
     showOwnship(true),
     followOwnship(false),
     isMapReady(false),
-    drawingOverlay(0)
+    drawingOverlay(0),
+    bPoints(false),
+    readyPointList(false),
+    graphicId(0)
 {
 
 
@@ -31,24 +38,26 @@ void MapController::onMapReady()
 
 void MapController::handleHomeClicked()
 {
-    if (!currentMapPoint.isEmpty())
+    if (!ownshipStartingMapPoint.isEmpty())
     {
-        qDebug()<<"homeClicked";
-        handleToggleFollowMe(false);
+        handleToggleFollowMe(false); // or it will just snap right back in simulation
+
         map->setExtent(originalExtent);
         map->setScale(originalScale);
         map->setRotation(0);
-        map->panTo(currentMapPoint);
+        map->panTo(ownshipStartingMapPoint);
     }
 }
 
 void MapController::handleToggleShowMe(bool state)
 {
+    qDebug()<<"handleToggleShowMe"<<state;
     showOwnship = state;
 }
 
 void MapController::handleToggleFollowMe(bool state)
 {
+    qDebug()<<"handleToggleFollowMe:"<<state;
     followOwnship = state;
 }
 
@@ -92,14 +101,29 @@ void MapController::handlePan(QString direction)
     map->panTo(newExtent);
 }
 
+void MapController::handleResetMap()
+{
+    qDebug()<<"handleResetMap()";
+    handleToggleFollowMe(false); // or it will just snap right back in simulation
+
+    map->setExtent(originalExtent);
+    map->setScale(originalScale);
+    map->setRotation(0);
+}
+
 void MapController::onAvaliblePosition(double lat, double lon, double heading)
 {
     if (!isMapReady ||  mapGraphicsView == 0)
         return;
-    qDebug()<<"onAvailblePosition-lat:"<<lat<<"  lon:"<<lon;
     Point mapPoint = GeometryEngine::project(lon, lat, map->spatialReference());
     currentMapPoint = mapPoint;
-    qDebug()<<"currentMapPoint: x: "<<currentMapPoint.x()<<" y:"<<currentMapPoint.y();
+    if (ownshipStartingMapPoint.isEmpty())
+    {
+        originalExtent = map->extent();
+        originalScale = map->scale();
+        ownshipStartingMapPoint = mapPoint; // originalExtent.center();
+    }
+
     if (drawingOverlay == 0)
     {
         qDebug()<<"new SimpleGraphicOverlay";
@@ -109,21 +133,117 @@ void MapController::onAvaliblePosition(double lat, double lon, double heading)
         QImage ownshipImage = ownshipPixmap.toImage();
         drawingOverlay->setImage(ownshipImage);
         drawingOverlay->setGraphicsView(mapGraphicsView);
-
-        originalScale = map->scale();
-        originalExtent = map->extent();
     }
     drawingOverlay->setVisible(showOwnship);
     if (showOwnship)
     {
+        qDebug()<<"on showOwnship";
         drawingOverlay->setPosition(mapPoint);
         drawingOverlay->setAngle(heading);
     }
 
     if (followOwnship)
     {
+        qDebug()<<"on     followOwnShip";
         map->setRotation(heading);
         map->panTo(mapPoint);
     }
 }
 
+void MapController::handlePointsToggled(bool state)
+{
+    bPoints = state;
+    if (!state && (graphicId != 0))
+    {
+        pointList.pop_back();
+        pointsLayer.removeGraphic(graphicId);
+    }
+}
+
+void MapController::handleToLinesClicked()
+{
+    qDebug()<<"handleToLinesClicked()"<< pointList.size();
+    if (isMapReady)
+    {
+        //        pointList.append(pointList.at(0));
+        if (pointList.size() <= 1)
+            return;
+        if (!readyPointList)
+        {
+//            pointList.pop_back();
+            pointList.append(pointList.first());
+            readyPointList = true;
+        }
+        else
+        {
+//            pointList.pop_back();
+            pointsLayer.removeAll();
+        }
+        QList<QList<EsriRuntimeQt::Point> > tmpList;
+        tmpList.append(pointList);
+        EsriRuntimeQt::Polyline line1(tmpList);
+        EsriRuntimeQt::SimpleLineSymbol lineSym1(QColor(0,0,255), 3);
+        EsriRuntimeQt::Graphic graphic1(line1, lineSym1);
+        pointsLayer.addGraphic(graphic1);
+
+    }
+}
+
+void MapController::handleOkClicked()
+{
+    qDebug()<<"handleOkClicked()";
+    map->removeLayer("tiledLayer");
+}
+
+void MapController::handleToPolygonClicked()
+{
+    if (isMapReady)
+    {
+        if (pointList.size() <= 1)
+            return;
+        if (!readyPointList)
+        {
+//            pointList.pop_back();
+            pointList.append(pointList.first());
+            readyPointList = true;
+        }
+        else
+        {
+//            pointList.pop_back();
+            pointsLayer.removeAll();
+        }
+        QList<QList<EsriRuntimeQt::Point> > tmpList;
+        tmpList.append(pointList);
+        EsriRuntimeQt::Polygon polygon(tmpList);
+        pointsLayer.addGraphic(EsriRuntimeQt::Graphic(polygon, EsriRuntimeQt::SimpleFillSymbol(QColor("Green"))));
+    }
+}
+
+void MapController::mousePress(QMouseEvent mouseEvent)
+{
+    if (bPoints && isMapReady)
+    {
+        QPointF mousePoint = QPointF(mouseEvent.pos().x(), mouseEvent.pos().y());
+        Point mapPoint = map->toMapPoint(mousePoint.x(), mousePoint.y());
+        pointList.append(mapPoint);
+        SimpleMarkerSymbol smsSymbol(Qt::red, 5, SimpleMarkerSymbolStyle::Circle);
+         Graphic mouseClickGraphic(mapPoint, smsSymbol);
+       graphicId = pointsLayer.addGraphic(mouseClickGraphic);
+    }
+}
+
+void MapController::init()
+{
+    if (map)
+    {
+        map->addLayer(pointsLayer);
+    }
+
+}
+
+void MapController::onClearClicked()
+{
+    pointList.clear();
+    pointsLayer.removeAll();
+    readyPointList = false;
+}

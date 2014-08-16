@@ -269,7 +269,6 @@ void MasterThread::storeSerialConfig()
 void MasterThread::Decoding(QString comdata)
 {
     QString header = comdata.left(6);
-    qDebug()<< "header" << header;
     if (header == "$GPGGA")
     {
         QStringList list = comdata.split(',');
@@ -295,25 +294,13 @@ void MasterThread::Decoding(QString comdata)
         int time_second = time.mid(4, 2).toInt();
         int time_msec = time.right(3).toInt();
         QString timeStr = QString("%1:%2:%3:%4").arg(time_hour).arg(time_minute).arg(time_second).arg(time_msec);
-        qDebug()<<"timeStr"<<timeStr;
         emit timeChanged(QVariant::fromValue(timeStr));
         QString state = list.at(2);
-        //        QString lanlon = list.at(3) + ',' +list.at(5).mid(1);
-        //        double lat = list.at(3).toDouble()/100;
-        //        double lon = list.at(5).mid(1).toDouble()/100;
-        //        QString sLat = decimalDegreesToDMS(lat);
-        //        QString sLon = decimalDegreesToDMS(lon);
-        //         QString latlon = sLat + ", " + sLon;
-        //        qDebug()<<"latlon:"<<latlon;
         QString lat = DMTODMS(list.at(3));
         QString lon = DMTODMS(list.at(5));
         QString latlon = lat + "," + lon;
-        qDebug()<<"lat"<< list.at(3);
-        qDebug()<<"latlon"<<latlon;
         QString speed = QString::number(list.at(7).toDouble() * 1.852);
-        qDebug()<<"speed: " <<speed;
         QString heading = list.at(8);
-        qDebug()<<"heading:"<<heading;
 //        emit stateChanged(QVariant::fromValue(state));
         emit positionChanged(QVariant::fromValue(latlon));
         emit speedChanged(QVariant::fromValue(speed));
@@ -321,7 +308,6 @@ void MasterThread::Decoding(QString comdata)
 
         double dLat = DMTodecimalDegrees(list.at(3));
         double dLon = DMTodecimalDegrees(list.at(5));
-        qDebug()<<"dLat"<<dLat;
         emit avaliblePosition(dLat, dLon, heading.toDouble());
 
     }

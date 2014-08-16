@@ -5,7 +5,7 @@
 #include <Map.h>
 #include <MapGraphicsView.h>
 #include "simplegraphicoverlay.h"
-
+#include <GraphicsLayer.h>
 #include <Geometry.h>
 
 using namespace EsriRuntimeQt;
@@ -16,6 +16,7 @@ class MapController : public QObject
 public:
     explicit MapController(Map* inputMap, MapGraphicsView *inputGraphicsView, QObject* parent = 0);
     ~MapController();
+    void init();
 
 private:
 
@@ -35,17 +36,8 @@ private:
     Map* map;
     MapGraphicsView* mapGraphicsView;
 
-
-//    QTimer* positionReportTimer;
-
-
-//    QPointF myPreviousLocation;
-//    QPoint previousMousePressPosScreen;
-//    Point previousMousePressPosMap;
-
-//    Point ownshipStartingMapPoint;
-//    Point lastOwnshipPoint;
-//    double lastHeading;
+    GraphicsLayer pointsLayer;
+    Point ownshipStartingMapPoint;
     Point currentMapPoint;
     bool showOwnship, followOwnship;
     bool isMapReady;
@@ -54,6 +46,13 @@ private:
 
      double originalScale;
     Envelope originalExtent;
+
+    bool bPoints;
+    QList<Point> pointList;
+    bool readyPointList;
+
+    qint64 graphicId;
+
 signals:
     void headingChanged(QVariant newHeading);
     void positionChanged(QVariant newPosition);
@@ -69,10 +68,16 @@ public slots:
     void handleToggleFollowMe(bool state);
     void handleZoomIn();
     void handleZoomOut();
-
+    void handleResetMap();
 
 
     void onAvaliblePosition(double, double, double);
+    void handlePointsToggled(bool);
+    void handleToLinesClicked();
+    void handleOkClicked();
+    void handleToPolygonClicked();
+    void onClearClicked();
+    void mousePress(QMouseEvent);
 };
 
 #endif // MAPCONTROLLER_H

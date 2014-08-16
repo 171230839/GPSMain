@@ -73,4 +73,7 @@ OTHER_FILES += \
     Resources/qml/Panels/Config/DataBitsPanel.qml \
     Resources/qml/Panels/Config/StopBitsPanel.qml \
     Resources/qml/Panels/Config/ParityPanel.qml \
-    Resources/qml/Panels/Config/TimeOutPanel.qml
+    Resources/qml/Panels/Config/TimeOutPanel.qml \
+    Resources/qml/PanelContainers/Worker.qml \
+    Resources/qml/Panels/Worker/WorkerPanel.qml \
+    Resources/qml/Panels/Worker/GeometryPanel.qml

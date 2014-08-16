@@ -46,6 +46,7 @@ private slots:
 private:
     EsriRuntimeQt::Map map;
     EsriRuntimeQt::MapGraphicsView* mapGraphicsView;
+
     MapController* mapController;
     QDeclarativeEngine* engine;
     QGraphicsWidget* overlayWidget;

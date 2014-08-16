@@ -139,21 +139,21 @@ LayoutItem
 
 
     // Layer toggling, add back in if desired:
-    //  ScrollButton
-    //  {
-    //    id: btnBasemaps
-    //    scrollButtonDefaultIcon: "../../icons/Basemap-Normal.png"
-    //    anchors.top: classificationBar.bottom
-    //    anchors.topMargin: 10
-    //    anchors.left: parent.left
-    //    anchors.leftMargin: 5
-    //    visible: menu.state != "open"
-    //    Component.onCompleted:
-    //    {
-    //      itemChanged.connect(window.basemapChanged)
-    //      itemChanged.connect(mainMenu.clicked)
-    //    }
-    //  }
+      ScrollButton
+      {
+        id: btnBasemaps
+        scrollButtonDefaultIcon: "../../icons/Basemap-Normal.png"
+        anchors.top: classificationBar.bottom
+        anchors.topMargin: 10
+        anchors.left: parent.left
+        anchors.leftMargin: 5
+        visible: menu.state != "open"
+        Component.onCompleted:
+        {
+          itemChanged.connect(window.basemapChanged)
+          itemChanged.connect(mainMenu.clicked)
+        }
+      }
 
     StatusBar
     {
