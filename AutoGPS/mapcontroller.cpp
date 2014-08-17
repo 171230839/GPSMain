@@ -5,19 +5,22 @@
 #include <Polygon.h>
 #include <SimpleFillSymbol.h>
 
+static const double  carWidth = 2.0;
+
 MapController::MapController(Map* inputMap,
                              MapGraphicsView* inputGraphicsView,
                              QObject* parent):
+    QObject(parent),
     map(inputMap),
     mapGraphicsView(inputGraphicsView),
-    QObject(parent),
     showOwnship(true),
     followOwnship(false),
     isMapReady(false),
     drawingOverlay(0),
     bPoints(false),
     readyPointList(false),
-    graphicId(0)
+    graphicId(0),
+    bSelectPoint(false)
 {
 
 
@@ -31,6 +34,7 @@ MapController::~MapController()
 void MapController::onMapReady()
 {
     isMapReady = true;
+    //    map->setScale(500.0);
 }
 
 
@@ -137,14 +141,14 @@ void MapController::onAvaliblePosition(double lat, double lon, double heading)
     drawingOverlay->setVisible(showOwnship);
     if (showOwnship)
     {
-        qDebug()<<"on showOwnship";
+        //        qDebug()<<"on showOwnship";
         drawingOverlay->setPosition(mapPoint);
         drawingOverlay->setAngle(heading);
     }
 
     if (followOwnship)
     {
-        qDebug()<<"on     followOwnShip";
+        //        qDebug()<<"on     followOwnShip";
         map->setRotation(heading);
         map->panTo(mapPoint);
     }
@@ -168,15 +172,18 @@ void MapController::handleToLinesClicked()
         //        pointList.append(pointList.at(0));
         if (pointList.size() <= 1)
             return;
+        if (bPoints&& (graphicId != 0))
+        {
+            pointsLayer.removeGraphic(graphicId);
+            pointList.pop_back();
+        }
         if (!readyPointList)
         {
-//            pointList.pop_back();
             pointList.append(pointList.first());
             readyPointList = true;
         }
         else
         {
-//            pointList.pop_back();
             pointsLayer.removeAll();
         }
         QList<QList<EsriRuntimeQt::Point> > tmpList;
@@ -192,7 +199,20 @@ void MapController::handleToLinesClicked()
 void MapController::handleOkClicked()
 {
     qDebug()<<"handleOkClicked()";
-    map->removeLayer("tiledLayer");
+    if (bPoints&& (graphicId != 0))
+    {
+        pointsLayer.removeGraphic(graphicId);
+        pointList.pop_back();
+        bPoints = false;
+    }
+    //    map->removeLayer("tiledLayer");
+    if (!readyPointList)
+    {
+        pointList.append(pointList.first());
+        readyPointList = true;
+    }
+    preparePaths();
+
 }
 
 void MapController::handleToPolygonClicked()
@@ -201,15 +221,18 @@ void MapController::handleToPolygonClicked()
     {
         if (pointList.size() <= 1)
             return;
+        if (bPoints&& (graphicId != 0))
+        {
+            pointsLayer.removeGraphic(graphicId);
+            pointList.pop_back();
+        }
         if (!readyPointList)
         {
-//            pointList.pop_back();
             pointList.append(pointList.first());
             readyPointList = true;
         }
         else
         {
-//            pointList.pop_back();
             pointsLayer.removeAll();
         }
         QList<QList<EsriRuntimeQt::Point> > tmpList;
@@ -221,15 +244,31 @@ void MapController::handleToPolygonClicked()
 
 void MapController::mousePress(QMouseEvent mouseEvent)
 {
-    if (bPoints && isMapReady)
+    if (!isMapReady)
+        return;
+    QPointF mousePoint = QPointF(mouseEvent.pos().x(), mouseEvent.pos().y());
+    Point mapPoint = map->toMapPoint(mousePoint.x(), mousePoint.y());
+    if (bPoints)
     {
-        QPointF mousePoint = QPointF(mouseEvent.pos().x(), mouseEvent.pos().y());
-        Point mapPoint = map->toMapPoint(mousePoint.x(), mousePoint.y());
+
         pointList.append(mapPoint);
         SimpleMarkerSymbol smsSymbol(Qt::red, 5, SimpleMarkerSymbolStyle::Circle);
-         Graphic mouseClickGraphic(mapPoint, smsSymbol);
-       graphicId = pointsLayer.addGraphic(mouseClickGraphic);
+        Graphic mouseClickGraphic(mapPoint, smsSymbol);
+        graphicId = pointsLayer.addGraphic(mouseClickGraphic);
+        return;
     }
+    if (bSelectPoint)
+    {
+        QList<qint64> hitGraphicIDs = pointsLayer.graphicIds(mousePoint.x(), mousePoint.y(), 3);
+        if (hitGraphicIDs.length() > 0)
+        {
+            pointsLayer.clearSelection();
+            pointsLayer.select(hitGraphicIDs.at(0));
+            return;
+        }
+
+    }
+
 }
 
 void MapController::init()
@@ -246,4 +285,125 @@ void MapController::onClearClicked()
     pointList.clear();
     pointsLayer.removeAll();
     readyPointList = false;
+}
+
+void MapController::preparePaths()
+{
+    qDebug()<<"preparePaths-size:"<<pointList.size();
+
+    foreach (Point point , pointList)
+    {
+        Point temp = GeometryEngine::project(point, map->spatialReference(), WGS84);
+        qDebug()<<QString("firstP x: %1 y: %2").arg(temp.x(), 0, 'g', 14).arg(temp.y(), 0, 'g', 14);
+        wgsList.append(temp);
+    }
+
+    for (int i = 1; i < wgsList.size(); ++i)
+    {
+        GeodesicDistanceResult  distance = GeometryEngine::geodesicDistanceBetweenPoints(wgsList.at(i - 1), wgsList.at(i), WGS84);
+        qDebug()<<"distance :"<<distance.distance() << "  angle:"<<distance.azimuthFrom1To2();
+        distanceList.append(distance.distance());
+        azimuthList.append(distance.azimuthFrom1To2());
+    }
+    pointList.pop_back();
+    wgsList.pop_back();
+}
+
+
+void MapController::handleSelectPointToggled(bool state)
+{
+    bSelectPoint = state;
+}
+
+void MapController::handleGetPathClicked()
+{
+    qint64 graphicID = getSelectedGraphicId();
+    if (graphicID != -1)
+    {
+        Graphic graphic = pointsLayer.graphic(graphicID);
+        Geometry geometry = graphic.geometry();
+        if (!Geometry::isPoint(geometry.type()))
+            return;
+        Point gPoint = geometry;
+        int order = -1;
+        for (int i = 0; i < pointList.size(); ++i)
+        {
+            if (gPoint == pointList.at(i))
+            {
+                order = i;
+            }
+        }
+        getPath(order);
+    }
+}
+
+qint64 MapController::getSelectedGraphicId()
+{
+    QList<qint64> hitGraphicIDs = pointsLayer.graphicIds();
+
+    for (int i = 0; i < hitGraphicIDs.length(); i++)
+    {
+        if (pointsLayer.isGraphicSelected(hitGraphicIDs.at(i)))
+            return hitGraphicIDs.at(i);
+    }
+    return -1;
+}
+
+void MapController::getPath(int order)
+{
+    if (order < 0)
+        return;
+    //    boolcompareDistance(order);
+    int index = wgsList.size() - 1;
+    qDebug()<<"order:"<<order;
+    qDebug()<<"index:"<<index;
+    double behindDistance ;
+    double frontDistance ;
+    double behindAngle;
+    double frontAngle;
+    if (order == 0)
+    {
+        behindDistance = distanceList.at(0);
+        behindAngle = azimuthList.at(0);
+        frontDistance = distanceList.back();
+        frontAngle = azimuthList.back();
+    }
+    else if (order <= index)
+    {
+        qDebug()<<"order<=";
+        behindDistance = distanceList.at(order);
+        behindAngle = azimuthList.at(order);
+        frontDistance = distanceList.at(order -1);
+        frontAngle = azimuthList.at(order - 1);
+    }
+    qDebug()<<"behindD"<<behindDistance;
+    qDebug()<<"frontD"<<frontDistance;
+    if (behindDistance <= frontDistance)
+    {
+        getFrontPath(order, frontAngle);
+    }
+    else
+        getBehindPath(order, behindAngle);
+}
+
+void MapController::getFrontPath(int order, double frontAngle)
+{
+    qDebug()<<"getFrontPath frontAngle:"<<frontAngle;
+}
+
+void MapController::getBehindPath(int order, double behindAngle)
+{
+    qDebug()<<"getBehindPath behindAngle: " << behindAngle;
+    if ( (0 < behindAngle) && ( behindAngle <= 90))
+    {
+         double y = asin(behindAngle) * carWidth;
+         qDebug()<<"y:"<<y;
+
+    }
+
+}
+
+void MapController::handleUnSelectClicked()
+{
+        pointsLayer.clearSelection();
 }

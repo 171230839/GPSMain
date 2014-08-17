@@ -20,16 +20,16 @@ public:
 
 private:
 
-//    bool filterMessages(const QString& strMessage);
-//    void transmitMessages(QByteArray datagram);
-//    void setMessagesStream(const QString& stream);
-//    void setMessagesStream(QXmlStreamReader& reader);
-//    bool readMessages(QXmlStreamReader& reader);
-//    bool readMessage(QXmlStreamReader& reader);
-//    void skipUnknownElement(QXmlStreamReader& reader);
-//    QString getReaderValue(QXmlStreamReader& reader);
-//    void readToElementEnd(QXmlStreamReader& reader);
-//    void showHideMe(bool show, Point atPoint, double withHeading);
+    //    bool filterMessages(const QString& strMessage);
+    //    void transmitMessages(QByteArray datagram);
+    //    void setMessagesStream(const QString& stream);
+    //    void setMessagesStream(QXmlStreamReader& reader);
+    //    bool readMessages(QXmlStreamReader& reader);
+    //    bool readMessage(QXmlStreamReader& reader);
+    //    void skipUnknownElement(QXmlStreamReader& reader);
+    //    QString getReaderValue(QXmlStreamReader& reader);
+    //    void readToElementEnd(QXmlStreamReader& reader);
+    //    void showHideMe(bool show, Point atPoint, double withHeading);
 
 
 
@@ -44,7 +44,7 @@ private:
 
     SimpleGraphicOverlay* drawingOverlay;
 
-     double originalScale;
+    double originalScale;
     Envelope originalExtent;
 
     bool bPoints;
@@ -52,6 +52,18 @@ private:
     bool readyPointList;
 
     qint64 graphicId;
+
+    void preparePaths();
+    static const  int WGS84 = 4326;
+
+    bool bSelectPoint;
+    QList<Point> wgsList;
+    QList<double> distanceList;
+    QList<double> azimuthList;
+    qint64 getSelectedGraphicId();
+    void getPath(int);
+    void getFrontPath(int, double);
+    void getBehindPath(int, double);
 
 signals:
     void headingChanged(QVariant newHeading);
@@ -62,7 +74,7 @@ public slots:
 
     void handleHomeClicked();
     void handlePan(QString direction);
-//    void handlePositionAvailable(QPointF pos, double orientation);
+    //    void handlePositionAvailable(QPointF pos, double orientation);
 
     void handleToggleShowMe(bool state);
     void handleToggleFollowMe(bool state);
@@ -78,6 +90,9 @@ public slots:
     void handleToPolygonClicked();
     void onClearClicked();
     void mousePress(QMouseEvent);
+    void handleSelectPointToggled(bool);
+    void handleGetPathClicked();
+    void handleUnSelectClicked();
 };
 
 #endif // MAPCONTROLLER_H

@@ -6,19 +6,11 @@ import "Controls"
 
 LayoutItem
 {
-    //    signal basemapChanged(string name)
+    signal basemapChanged(string name)
     signal homeClicked()
     signal zoomInClicked()
     signal zoomOutClicked()
     signal panClicked(string direction)
-
-
-
-    //For fake values in updateSpeed and updateAltitude functions
-    property int lastFakeSpeed: 60;
-    property int lastFakeAltitude: 1814;
-
-
 
     function updateLocation(newLocation)
     {
@@ -31,12 +23,12 @@ LayoutItem
         //statusBar.currentSpeed = "   Speed: " + (Math.round(10.0 * newSpeed) / 10.0);
         //However, the app provides speeds that are unrealistically fast and highly variable.
         //Therefore, fake it as follows:
-//        var rand = Math.random();
-//        if (rand < 0.005)
-//            lastFakeSpeed--;
-//        else if (rand > 0.995)
-//            lastFakeSpeed++;
-        statusBar.currentSpeed = "      Speed: " + lastFakeSpeed;
+        //        var rand = Math.random();
+        //        if (rand < 0.005)
+        //            lastFakeSpeed--;
+        //        else if (rand > 0.995)
+        //            lastFakeSpeed++;
+        statusBar.currentSpeed = "      Speed: " + newSpeed;
     }
 
 
@@ -76,50 +68,50 @@ LayoutItem
         classificationColor: Qt.rgba(0, 1, 0, 1)
     }
 
-        ToggleButton
+    ToggleButton
+    {
+        id: btnMenu
+        buttonDefaultIcon: "../../icons/Menu-Normal.png"
+        buttonActiveIcon: "../../icons/Menu-Pressed.png"
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.margins: 3
+        Component.onCompleted:
         {
-            id: btnMenu
-            buttonDefaultIcon: "../../icons/Menu-Normal.png"
-            buttonActiveIcon: "../../icons/Menu-Pressed.png"
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.margins: 3
-            Component.onCompleted:
-            {
-                itemClicked.connect(menu.invoke)
-            }
+            itemClicked.connect(menu.invoke)
+        }
+        z: 2
+
+        Menu
+        {
+            id: menu
+            windowHeight: window.height - classificationBar.height - btnMenu.height - 15
+            windowWidth: window.width / 4
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.bottom
             z: 2
-
-            Menu
+            onMenuClosed:
             {
-                id: menu
-                windowHeight: window.height - classificationBar.height - btnMenu.height - 15
-                windowWidth: window.width / 4
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.bottom
-                z: 2
-                onMenuClosed:
+                while (stack.count() > 1)
                 {
-                    while (stack.count() > 1)
-                    {
-                        stack.removePanel()
-                    }
+                    stack.removePanel()
                 }
+            }
 
-                Stack
-                {
-                    id: stack
-                }
+            Stack
+            {
+                id: stack
+            }
 
-                MainMenu
-                {
-                    id: mainMenu
-                    stack: stack
-                    anchors.fill: parent
-                    onCloseMenu: btnMenu.setToggled(false)
-                }
+            MainMenu
+            {
+                id: mainMenu
+                stack: stack
+                anchors.fill: parent
+                onCloseMenu: btnMenu.setToggled(false)
             }
         }
+    }
 
     PushButton
     {
@@ -139,21 +131,20 @@ LayoutItem
 
 
     // Layer toggling, add back in if desired:
-      ScrollButton
-      {
+    ScrollButton
+    {
         id: btnBasemaps
         scrollButtonDefaultIcon: "../../icons/Basemap-Normal.png"
         anchors.top: classificationBar.bottom
         anchors.topMargin: 10
-        anchors.left: parent.left
-        anchors.leftMargin: 5
+        anchors.right: parent.right
+        anchors.rightMargin: 5
         visible: menu.state != "open"
         Component.onCompleted:
         {
-          itemChanged.connect(window.basemapChanged)
-          itemChanged.connect(mainMenu.clicked)
+            itemChanged.connect(window.basemapChanged)
         }
-      }
+    }
 
     StatusBar
     {

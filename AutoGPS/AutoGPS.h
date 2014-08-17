@@ -19,7 +19,7 @@
 #include <QMainWindow>
 #include "mapcontroller.h"
 #include "masterthread.h"
-
+#include <ArcGISLocalTiledLayer.h>
 
 class QDeclarativeEngine;
 class QGraphicsWidget;
@@ -41,12 +41,12 @@ public:
 
 private slots:
     void updateNorthArrow();
-    //public slots:
-    //    void onPortListChanged();
+public slots:
+    void  handleBasemapChanged(QString);
 private:
     EsriRuntimeQt::Map map;
     EsriRuntimeQt::MapGraphicsView* mapGraphicsView;
-
+    ArcGISLocalTiledLayer tiledLayer;
     MapController* mapController;
     QDeclarativeEngine* engine;
     QGraphicsWidget* overlayWidget;
@@ -55,7 +55,9 @@ private:
     QDeclarativeContext * context ;
     MasterThread thread;
 
-
+    void setBasemapFirst();
+    void setBasemapSecond();
+    void setBasemapThird();
 protected:
     void resizeEvent(QResizeEvent* event);
     void closeEvent(QCloseEvent *event);

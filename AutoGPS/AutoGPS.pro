@@ -61,6 +61,7 @@ OTHER_FILES += \
     Resources/qml/Controls/Stack.qml\
     Resources/qml/Controls/StackObject.js\
     Resources/qml/Controls/ToggleButton.qml\
+    Resources/qml/Controls/ScrollButton.qml\
     Resources/qml/MainOverlay.qml\
     Resources/qml/PanelContainers/MainMenu.qml\
     Resources/qml/Panels/MainMenu/MainPanel.qml \
@@ -76,4 +77,5 @@ OTHER_FILES += \
     Resources/qml/Panels/Config/TimeOutPanel.qml \
     Resources/qml/PanelContainers/Worker.qml \
     Resources/qml/Panels/Worker/WorkerPanel.qml \
-    Resources/qml/Panels/Worker/GeometryPanel.qml
+    Resources/qml/Panels/Worker/GeometryPanel.qml \
+    Resources/qml/Panels/Worker/PathsPanel.qml

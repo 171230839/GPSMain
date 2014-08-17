@@ -8,6 +8,7 @@ Panel{
     signal toPolygonClicked()
     signal clearClicked()
 
+    property Panel pathsPanel
     id: geometryPanel
     title: "get Geometry"
     objectName: "geometryPanel"
@@ -19,7 +20,7 @@ Panel{
         ModelObject { text: "toLines";  Component.onCompleted: noArgModelSignal.connect(geometryPanel.toLinesClicked); },
         ModelObject { text: "toPolygon"; Component.onCompleted: noArgModelSignal.connect(geometryPanel.toPolygonClicked);},
         ModelObject { text: "Clear"; Component.onCompleted: noArgModelSignal.connect(geometryPanel.clearClicked);},
-        ModelObject { text: "OK"; Component.onCompleted: noArgModelSignal.connect(geometryPanel.okClicked); }
+        ModelObject { text: "OK"; Component.onCompleted: noArgModelSignal.connect(geometryPanel.okClicked);onNoArgModelSignal: {geometryPanel.goBack(); stack.addPanel(pathsPanel) }}
 
 ]
 }

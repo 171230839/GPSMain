@@ -299,7 +299,7 @@ void MasterThread::Decoding(QString comdata)
         QString lat = DMTODMS(list.at(3));
         QString lon = DMTODMS(list.at(5));
         QString latlon = lat + "," + lon;
-        QString speed = QString::number(list.at(7).toDouble() * 1.852);
+        QString speed = QString::number(list.at(7).toDouble() * 1.852) + "km/h";
         QString heading = list.at(8);
 //        emit stateChanged(QVariant::fromValue(state));
         emit positionChanged(QVariant::fromValue(latlon));

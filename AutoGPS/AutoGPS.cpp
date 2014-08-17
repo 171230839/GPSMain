@@ -1,6 +1,6 @@
 #include "AutoGPS.h"
 #include <QApplication>
-#include <ArcGISLocalTiledLayer.h>
+
 //#include <ArcGISTiledMapServiceLayer.h>
 //#include <QtDeclarative/QDeclarativeItem>
 #include <QtDeclarative/QDeclarativeComponent>
@@ -30,33 +30,34 @@ AutoGPS::AutoGPS (QWidget *parent):
     mapGraphicsView = EsriRuntimeQt::MapGraphicsView::create(map, this);
     if (!mapGraphicsView)
     {
-      qCritical() << "Unable to create map.";
-      return;
+        qCritical() << "Unable to create map.";
+        return;
     }
     map.setWrapAroundEnabled(false);
     map.setEsriLogoVisible(false);
     this->setCentralWidget(mapGraphicsView);
     QString tpkPath = QApplication::applicationDirPath() + QDir::separator() + "AutoGPS.tpk";
-    ArcGISLocalTiledLayer tiledLayer(tpkPath);
+    tiledLayer.setPath(tpkPath);
     tiledLayer.setName("tiledLayer");
     map.addLayer(tiledLayer);
-//    ArcGISTiledMapServiceLayer tiledLayer("http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer");
-//    map.addLayer(tiledLayer);
-//    ArcGISLocalTiledLayer tiledLayer("D:/Qt/QtSampleApplication_10.2.3_win32/sdk/samples/data/tpks/Topographic.tpk");
-//    map.addLayer(tiledLayer);
+    //    ArcGISTiledMapServiceLayer tiledLayer("http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer");
+    //    map.addLayer(tiledLayer);
+    //    ArcGISLocalTiledLayer tiledLayer("D:/Qt/QtSampleApplication_10.2.3_win32/sdk/samples/data/tpks/Topographic.tpk");
+    //    map.addLayer(tiledLayer);
 
     mapController = new MapController(&map, mapGraphicsView, this);
     mapController->init();
 
     engine = new QDeclarativeEngine(this);
     context = new QDeclarativeContext(engine->rootContext());
-      context->setContextProperty("serialPortThread", &thread);
-//      connect(&thread, SIGNAL(portListChanged), this, SLOT(onPortListChanged));
-//      qDebug()<<"portList()"<<QVariant::fromValue(thread.portList());
-//      context->setContextProperty("serialPortNo", QVariant::fromValue(thread.portList()));
+    context->setContextProperty("serialPortThread", &thread);
+    //      connect(&thread, SIGNAL(portListChanged), this, SLOT(onPortListChanged));
+    //      qDebug()<<"portList()"<<QVariant::fromValue(thread.portList());
+    //      context->setContextProperty("serialPortNo", QVariant::fromValue(thread.portList()));
+
     QDeclarativeComponent component(engine, QUrl(UI_OVERLAY_PATH), engine);
     overlayUI = component.create(context);
-//    thread.setContext(context);
+    //    thread.setContext(context);
     if (!overlayUI)
     {
         qDebug() << "Failed to load UI overlay";
@@ -90,7 +91,7 @@ AutoGPS::AutoGPS (QWidget *parent):
     connect(&thread, SIGNAL(timeChanged(QVariant)), overlayUI, SLOT(updateTime(QVariant)));
     connect(&thread, SIGNAL(speedChanged(QVariant)), overlayUI, SLOT(updateSpeed(QVariant)));
     connect(&thread, SIGNAL(headingChanged(QVariant)), overlayUI, SLOT(updateHeading(QVariant)));
-//    connect(mapController, SIGNAL())
+    connect(overlayUI, SIGNAL(basemapChanged(QString)), this, SLOT(handleBasemapChanged(QString)));
 
     mainMenuUI = overlayUI->findChild<QObject*>("mainMenu");
     if (mainMenuUI)
@@ -121,20 +122,33 @@ AutoGPS::AutoGPS (QWidget *parent):
         connect(geometryPanel, SIGNAL(clearClicked()), mapController, SLOT(onClearClicked()));
     }
 
-//    thread.init();
-//    connect(&thread, SIGNAL(response(QString)), mapController, SLOT(onResponse(QString)));
-//    connect(&thread, SIGNAL(timeout(QString)), mapController, SLOT(onTimeout(QString)));
-//    connect(&thread, SIGNAL(error(QString)), mapController, SLOT(onError(QString)));
+    QObject *workerPanel = overlayUI->findChild<QObject*>("workerPanel");
+    if (workerPanel)
+    {
+        //        connect(workerPanel, SIGNAL(selectPointToggled(bool)), mapController, SLOT(handleSelectPointToggled(bool)));
+    }
+    QObject *pathsPanel = overlayUI->findChild<QObject*>("pathsPanel");
+    if (pathsPanel)
+    {
+        connect(pathsPanel, SIGNAL(selectPointToggled(bool)), mapController, SLOT(handleSelectPointToggled(bool)));
+        connect(pathsPanel, SIGNAL(getPathClicked()), mapController, SLOT(handleGetPathClicked()));
+              connect(pathsPanel, SIGNAL(unSelectClicked()), mapController, SLOT(handleUnSelectClicked()));
+    }
+
+    //    thread.init();
+    //    connect(&thread, SIGNAL(response(QString)), mapController, SLOT(onResponse(QString)));
+    //    connect(&thread, SIGNAL(timeout(QString)), mapController, SLOT(onTimeout(QString)));
+    //    connect(&thread, SIGNAL(error(QString)), mapController, SLOT(onError(QString)));
     thread.start();
 
-     connect(&map, SIGNAL(mapReady()), mapController, SLOT(onMapReady()));
+    connect(&map, SIGNAL(mapReady()), mapController, SLOT(onMapReady()));
 
-     QTimer* timer = new QTimer(this);
-     connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
-     timer->start(1000 / 24);
+    QTimer* timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateNorthArrow()));
+    timer->start(1000 / 24);
 
-     // hook up the handler for the mouse click
-     connect(&map, SIGNAL(mousePress(QMouseEvent)), mapController, SLOT(mousePress(QMouseEvent)));
+    // hook up the handler for the mouse click
+    connect(&map, SIGNAL(mousePress(QMouseEvent)), mapController, SLOT(mousePress(QMouseEvent)));
 
 }
 
@@ -160,7 +174,45 @@ void AutoGPS::resizeEvent(QResizeEvent* event)
 void AutoGPS::closeEvent(QCloseEvent *event)
 {
 
-      thread.storeSerialConfig();
-      event->accept();
+    thread.storeSerialConfig();
+    event->accept();
 }
 
+void AutoGPS::handleBasemapChanged(QString basemap)
+{
+    if (basemap == "first")
+    {
+        setBasemapFirst();
+    }
+    else if ( basemap == "second")
+    {
+        setBasemapSecond();
+    }
+    else if (basemap == "third")
+    {
+        setBasemapThird();
+    }
+}
+
+void AutoGPS::setBasemapFirst()
+{
+    QStringList layerNames = map.layerNames();
+    if (!layerNames.contains("tiledLayer"))
+    {
+        map.addLayer(this->tiledLayer);
+    }
+}
+
+void AutoGPS::setBasemapSecond()
+{
+    QStringList layerNames = map.layerNames();
+    if (layerNames.contains("tiledLayer"))
+    {
+        map.removeLayer("tiledLayer");
+    }
+}
+
+void AutoGPS::setBasemapThird()
+{
+
+}
