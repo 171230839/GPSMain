@@ -13,13 +13,11 @@
 #ifndef AUTOGPS_H
 #define AUTOGPS_H
 
-
-
 #include <Map.h>
 #include <QMainWindow>
 #include "mapcontroller.h"
 #include "masterthread.h"
-#include <ArcGISLocalTiledLayer.h>
+#include "camera.h"
 
 class QDeclarativeEngine;
 class QGraphicsWidget;
@@ -46,7 +44,7 @@ public slots:
 private:
     EsriRuntimeQt::Map map;
     EsriRuntimeQt::MapGraphicsView* mapGraphicsView;
-    ArcGISLocalTiledLayer tiledLayer;
+//    ArcGISLocalTiledLayer tiledLayer;
     MapController* mapController;
     QDeclarativeEngine* engine;
     QGraphicsWidget* overlayWidget;
@@ -54,6 +52,7 @@ private:
     QObject* mainMenuUI;
     QDeclarativeContext * context ;
     MasterThread thread;
+    Camera camera;
 
     void setBasemapFirst();
     void setBasemapSecond();

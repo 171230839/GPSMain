@@ -12,6 +12,8 @@ LayoutItem
     signal zoomOutClicked()
     signal panClicked(string direction)
 
+    property string currentItem : "Map"
+
     function updateLocation(newLocation)
     {
         statusBar.currentLocation = "Location: " + newLocation
@@ -59,12 +61,21 @@ LayoutItem
     height: 768
     minimumSize: "600x400"
     preferredSize: "800x600"
+    onCurrentItemChanged:
+    {
+        if (currentItem === "Map")
+            classificationBar.lblClassification = "AutoGPS - Map View"
+        else if (currentItem === "Camera")
+            classificationBar.lblClassification = "AutoGPS - Camera View"
+        else if (currentItem === "3D")
+            classificationBar.lblClassification = "AutoGPS - 3D View"
+    }
 
     ClassificationBar
     {
         id: classificationBar
         width: parent.width
-        lblClassification: "AutoGPS"
+        lblClassification: "AutoGPS - Map View"
         classificationColor: Qt.rgba(0, 1, 0, 1)
     }
 
@@ -76,6 +87,7 @@ LayoutItem
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: 3
+        visible: window.currentItem === "Map"
         Component.onCompleted:
         {
             itemClicked.connect(menu.invoke)
@@ -113,6 +125,7 @@ LayoutItem
         }
     }
 
+
     PushButton
     {
         id: btnHome
@@ -121,6 +134,7 @@ LayoutItem
         anchors.left: btnMenu.right
         anchors.bottom: parent.bottom
         anchors.margins: 3
+        visible: window.currentItem === "Map"
         Component.onCompleted:
         {
             itemClicked.connect(window.homeClicked)
@@ -139,10 +153,14 @@ LayoutItem
         anchors.topMargin: 10
         anchors.right: parent.right
         anchors.rightMargin: 5
-        visible: menu.state != "open"
+        //        visible: menu.state != "open"
         Component.onCompleted:
         {
-            itemChanged.connect(window.basemapChanged)
+            itemChanged.connect(window.basemapChanged);
+        }
+        onItemChanged:
+        {
+            window.currentItem = name;
         }
     }
 
@@ -153,6 +171,7 @@ LayoutItem
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.margins: 3
+        visible: window.currentItem === "Map"
     }
 
     NavigationControl2
@@ -162,6 +181,7 @@ LayoutItem
         anchors.bottom:parent.bottom
         anchors.right: parent.right
         anchors.margins: 3
+        visible: window.currentItem === "Map"
         Component.onCompleted:
         {
             zoomInClicked.connect(window.zoomInClicked)
@@ -180,7 +200,52 @@ LayoutItem
         height: navControl.width * .75
         smooth: true
         fillMode: Image.PreserveAspectFit
+        visible: window.currentItem === "Map"
     }
 
+    ToggleButton
+    {
+        id: cMenu
+        buttonDefaultIcon: "../../icons/Menu-Normal.png"
+        buttonActiveIcon: "../../icons/Menu-Pressed.png"
+        anchors.bottom: parent.bottom
+       anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: 3
+        visible: window.currentItem === "Camera"
+        Component.onCompleted:
+        {
+            itemClicked.connect(cmenu.invoke)
+        }
+        z: 2
 
+        Menu
+        {
+            id: cmenu
+            windowHeight: window.height / 4
+            windowWidth: window.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: window.bottom
+            z: 2
+            onMenuClosed:
+            {
+                while (cstack.count() > 1)
+                {
+                    cstack.removePanel()
+                }
+            }
+
+            Stack
+            {
+                id: cstack
+            }
+
+            MainMenu
+            {
+                id: cmainMenu
+                stack: cstack
+                anchors.fill: parent
+                onCloseMenu: cMenu.setToggled(false)
+            }
+        }
+    }
 }

@@ -2,14 +2,18 @@
 #define MAPCONTROLLER_H
 
 #include <QObject>
-#include <Map.h>
-#include <MapGraphicsView.h>
 #include "simplegraphicoverlay.h"
 #include <GraphicsLayer.h>
-#include <Geometry.h>
+#include <Point.h>
 
 using namespace EsriRuntimeQt;
-
+namespace EsriRuntimeQt
+{
+class Point;
+class MapGraphicsView;
+class Map;
+class GraphicsLayer;
+}
 class MapController : public QObject
 {
     Q_OBJECT
@@ -17,7 +21,7 @@ public:
     explicit MapController(Map* inputMap, MapGraphicsView *inputGraphicsView, QObject* parent = 0);
     ~MapController();
     void init();
-
+    SimpleGraphicOverlay*  getSimpleGraphic() { return this->drawingOverlay;}
 private:
 
     //    bool filterMessages(const QString& strMessage);
@@ -36,7 +40,7 @@ private:
     Map* map;
     MapGraphicsView* mapGraphicsView;
 
-    GraphicsLayer pointsLayer;
+    GraphicsLayer  pointsLayer;
     Point ownshipStartingMapPoint;
     Point currentMapPoint;
     bool showOwnship, followOwnship;

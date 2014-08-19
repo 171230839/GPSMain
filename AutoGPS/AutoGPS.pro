@@ -14,12 +14,35 @@
 TARGET = AutoGPS 
 TEMPLATE = app
 
-QT += core gui opengl xml network declarative
+QT +=  opengl xml network declarative
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets serialport
+    QT += widgets serialport multimediawidgets
 }
 
+
+# Opencv
+INCLUDEPATH += D:/opencv/build/include
+
+
+CONFIG(debug,debug|release) {
+LIBS += -LD:/opencv/build/x86/vc11/lib \
+    -lopencv_core249d \
+    -lopencv_highgui249d \
+    -lopencv_imgproc249d \
+    -lopencv_features2d249d \
+    -lopencv_calib3d249d
+} else {
+LIBS += -LD:/opencv/build/x86/vc11/lib \
+    -lopencv_core249 \
+    -lopencv_highgui249 \
+    -lopencv_imgproc249 \
+    -lopencv_features2d249 \
+    -lopencv_calib3d249
+}
+
+
+# ------
 # After installing the Runtime SDK for Qt you'll need to copy the
 # esri_runtime_qt_10_2_3.prf file from your qt10.2.3/sdk/ideintegration folder
 # to your Qt SDK's mkspecs/features folder in order for Qt Creator to locate 
@@ -36,13 +59,15 @@ SOURCES += \
         AutoGPS.cpp \ 
     mapcontroller.cpp \
     simplegraphicoverlay.cpp \
-    masterthread.cpp
+    masterthread.cpp \
+    camera.cpp
 
 HEADERS += \
 	AutoGPS.h \
     mapcontroller.h \
     simplegraphicoverlay.h \
-    masterthread.h
+    masterthread.h \
+    camera.h
 
 FORMS +=
 
@@ -78,4 +103,5 @@ OTHER_FILES += \
     Resources/qml/PanelContainers/Worker.qml \
     Resources/qml/Panels/Worker/WorkerPanel.qml \
     Resources/qml/Panels/Worker/GeometryPanel.qml \
-    Resources/qml/Panels/Worker/PathsPanel.qml
+    Resources/qml/Panels/Worker/PathsPanel.qml \
+    Resources/qml/PanelContainers/Camera.qml

@@ -4,6 +4,9 @@
 #include <Polyline.h>
 #include <Polygon.h>
 #include <SimpleFillSymbol.h>
+#include <MapGraphicsView.h>
+#include <Map.h>
+
 
 static const double  carWidth = 2.0;
 
@@ -396,14 +399,13 @@ void MapController::getBehindPath(int order, double behindAngle)
     qDebug()<<"getBehindPath behindAngle: " << behindAngle;
     if ( (0 < behindAngle) && ( behindAngle <= 90))
     {
-         double y = asin(behindAngle) * carWidth;
-         qDebug()<<"y:"<<y;
-
+        double y = asin(behindAngle) * carWidth;
+        qDebug()<<"y:"<<y;
     }
 
 }
 
 void MapController::handleUnSelectClicked()
 {
-        pointsLayer.clearSelection();
+    pointsLayer.clearSelection();
 }
